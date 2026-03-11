@@ -11,7 +11,7 @@ const port = process.env.PORT ?? 3000
 
 const app = express()
 app.use(logger('dev'))
-app.use(express.static(process.cwd() + '/public'))
+app.use(express.static(process.cwd() + '/public', { index: false }))
 
 const server = createServer(app)
 const io = new Server(server)
@@ -39,9 +39,7 @@ timeSync.on('correctionComplete', (data) => {
 
 
 app.get('/', (req, res) => {
-    // res.send("Este es el stream")
-    res.sendFile(process.cwd() + '/public/metronome.html')
-    // res.sendFile(process.cwd() + '/public/index.html')
+  res.sendFile(process.cwd() + '/public/metronome.html') // por ahora sera el metronomo
 })
 
 app.get('/timeSync', (req, res) => {
@@ -225,5 +223,3 @@ io.on('connection', (socket) => {
   })
 
 })
-
-
