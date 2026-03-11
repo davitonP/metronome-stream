@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secuencias</title>
+    <link rel="stylesheet" href="/assets/css/output.css">
+</head>
+<body>
+    <h1>Secuencias de Audio</h1>
+    
+    <h2>Canciones Disponibles</h2>
+    <ul id="songs-list"></ul>
+    
+    <button id="start" disabled>Comenzar Sincronización</button>
+    <button id="pause">Pausar</button>
+    <div id="player-container">
+        <h2>Reproductor</h2>
+        <audio id="audio-player" controls>
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    
+    <!-- <div>
+        <h2>Video de Prueba</h2>
+        <video id="secuencia" controls>
+            <source src="/video" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div> -->
+</body>
+</html>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/assets/js/client.js"></script>
+

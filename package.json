@@ -1,0 +1,23 @@
+{
+  "name": "secuencias-stream",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch ./server/index.js",
+    "build:css": "tailwindcss -i ./public/assets/css/index.css -o ./public/assets/css/output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "express": "5.2.1",
+    "morgan": "^1.10.1",
+    "precise-time-ntp": "^2.0.1",
+    "socket.io": "4.8.3",
+    "tailwindcss": "^4.1.18"
+  }
+}

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Metrónomo Stream</title>
+</head>
+<body id="body" class="bg-gray-900 text-white min-h-screen flex items-center justify-center font-sans selection:bg-blue-500 selection:text-white">
+
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+        
+        <!-- Session UI -->
+        <div class="mb-6 bg-gray-900/50 p-4 rounded-xl border border-gray-700/50">
+             <label class="text-xs text-gray-500 font-medium uppercase block mb-2">Session ID</label>
+             <div class="flex gap-2">
+                <input type="text" id="session-input" value="default" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="Enter session name...">
+                <button id="join-btn" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Join</button>
+             </div>
+             <p class="text-[10px] text-gray-400 mt-2">Current Session: <span id="current-session-display" class="text-green-400 font-mono">default</span></p>
+        </div>
+
+        <div class="text-center mb-8">
+            <h3 class="text-gray-400 uppercase tracking-widest text-sm font-semibold mb-2">BPM</h3>
+            <h1 id="bpmLabel" class="text-7xl font-black text-blue-500 tabular-nums tracking-tighter">90</h1>
+        </div>
+
+        <div id="beats" class="flex justify-center gap-6 mb-10">
+            <div id="beat0" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
+            <div id="beat1" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
+            <div id="beat2" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
+            <div id="beat3" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
+        </div>
+
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500 font-medium uppercase">Tempo</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button 
+                    id="bpm1minus" 
+                    class="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-full text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Decrease BPM"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                
+                <input
+                    type="range"
+                    id="bpm-slider"
+                    name="bpm"
+                    min="0"
+                    max="200"
+                    value="90"
+                    step="1"
+                    class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50" 
+                />
+                
+                <button 
+                    id="bpm1plus" 
+                    class="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-full text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Increase BPM"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-8 bg-gray-900/50 p-4 rounded-xl border border-gray-700/50">
+            <div class="flex justify-between items-center mb-3">
+                <label for="latency-adjust" class="text-sm font-medium text-gray-400">Audio Sync Delay</label>
+                <span class="text-xs font-mono bg-gray-700 px-2 py-1 rounded text-gray-300"><span id="latency-val">0</span> ms</span>
+            </div>
+            <input 
+                type="range" 
+                id="latency-adjust" 
+                min="-200" 
+                max="200" 
+                value="0" 
+                step="10" 
+                class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500 hover:accent-purple-400 focus:outline-none"
+            />
+            <p class="text-[10px] text-gray-500 mt-2 text-center">Fine-tune if the audio is out of sync with the visual beat.</p>
+        </div>
+
+        <button 
+            id="metronome-start"
+            class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+        >
+            Start Metronome
+        </button>
+
+        <p id="clock" class="text-center text-gray-600 mt-6 text-xs font-mono opacity-50">10</p>
+    </div>
+
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/assets/js/utils.js"></script>   
+<script src= "/assets/js/metronome.js"></script>
+<script src="/assets/js/timeSync.js"></script>
+<script>
+
+    let bpm = 90;
+    let metronome = null;
+    let userLatency = 0;
+    let sessionId = "default";
+
+    // Session Logic
+    const sessionInput = document.getElementById('session-input');
+    const joinBtn = document.getElementById('join-btn');
+    const currentSessionDisplay = document.getElementById('current-session-display');
+
+    function joinCurrentSession() {
+        const id = sessionInput.value.trim() || "default";
+        if (id === sessionId && window.socket.connected) {
+             // Maybe re-join if needed, but usually redundant unless socket reconnected
+             window.socket.emit('join-session', sessionId);
+             return; 
+        }
+        sessionId = id;
+        console.log("Joining session:", sessionId);
+        window.socket.emit('join-session', sessionId);
+        currentSessionDisplay.textContent = sessionId;
+        
+        // Stop metronome when switching sessions to avoid confusion
+        if (metronome && metronome.isPlaying) {
+             metronome.stop();
+             metroButton.textContent = "Start Metronome";
+        }
+    }
+
+    joinBtn.addEventListener('click', joinCurrentSession);
+
+    // Initial Join
+    if (window.socket.connected) {
+        joinCurrentSession();
+    }
+    window.socket.on('connect', () => {
+        // Re-join session on reconnect
+        console.log("Connected, joining session...");
+        // Use the current value of the input or the last stored sessionId?
+        // Let's use the variable to persist session across reconnects
+        window.socket.emit('join-session', sessionId);
+    });
+    
+    initMetronome().then((m) => {
+        if (!m) return;
+        metronome = m;
+        // Listen for server command only AFTER metronome is ready
+        if (window.socket) {
+            window.socket.on('metronome-start', (data) => {
+                console.log("Received metronome-start", data);
+                if (data.bpm && data.bpm !== bpm) {
+                    metronome.setBPM(data.bpm);
+                    bpm = data.bpm;
+                    document.getElementById('bpm-slider').value = bpm;
+                    bpmLabel.textContent = bpm;
+                }
+                
+                if (metronome.isRunning) metronome.stop();
+                metronome.start(data.startAt);
+            });
+        }
+    });
+
+    window.socket.on('metronome-stop', () => {
+        console.log("Received metronome-stop");
+        metronome.stop();
+        metroButton.textContent = "Start Metronome";
+    });
+    
+    const latencySlider = document.getElementById('latency-adjust');
+    latencySlider.addEventListener('input', (e) => {
+        userLatency = Number(e.target.value);
+        document.getElementById('latency-val').textContent = userLatency;
+        if (metronome) metronome.setUserLatency(userLatency);
+    });
+    
+    const newBpm = document.getElementById('bpm-slider');
+    newBpm.addEventListener('input', (e) => {
+        const nextBpm = Number(e.target.value);
+        bpmLabel.textContent = nextBpm;
+        //console.log(`🎶 Cambiando BPM a ${nextBpm}`);
+        bpm = nextBpm;
+        if (metronome) {
+            metronome.setBPM(nextBpm);
+        }
+
+        if (!metronome.isPlaying) return;
+        window.socket.emit('metronome-start', {
+            bpm: nextBpm,
+            durationMs: 60000, // Run for 1 minute by default
+            sessionId: sessionId
+        });
+    });
+
+    const bpm1minus = document.getElementById('bpm1minus');
+    bpm1minus.addEventListener('click', () => {
+        const nextBpm = Math.max(0, bpm - 1);
+        bpmLabel.textContent = nextBpm;
+        bpm = nextBpm;
+        document.getElementById('bpm-slider').value = nextBpm; // Sync slider
+        if (metronome) {
+            metronome.setBPM(nextBpm);
+        }
+
+        if (!metronome.isPlaying) return;
+        window.socket.emit('metronome-start', {
+            bpm: nextBpm,
+            durationMs: 60000, // Run for 1 minute by default
+            sessionId: sessionId
+        });
+    });
+    
+    const bpm1plus = document.getElementById('bpm1plus');
+    bpm1plus.addEventListener('click', () => {
+        const nextBpm = Math.min(200, bpm + 1);
+        bpmLabel.textContent = nextBpm;
+        bpm = nextBpm;
+        document.getElementById('bpm-slider').value = nextBpm; // Sync slider
+        if (metronome) {
+            metronome.setBPM(nextBpm);
+        }
+
+        if (!metronome.isPlaying) return;
+        window.socket.emit('metronome-start', {
+            bpm: nextBpm,
+            durationMs: 60000, // Run for 1 minute by default
+            sessionId: sessionId
+        });
+    });
+    
+    
+    const metroButton = document.getElementById('metronome-start');
+    metroButton.addEventListener('click', () => {
+        if (!metronome) return;
+        console.log(metronome.isPlaying);
+        if (metronome.isPlaying) {
+            console.log("Stopping metronome...");
+            metronome.stop();
+            window.socket.emit('metronome-stop', { sessionId });
+            metroButton.textContent = "Start Metronome";
+            return;
+        }
+        
+        // If not synced yet, warn but maybe allow local start?
+        if (!window.syncCompleted) {
+            console.warn("⚠ No time sync yet, starting locally");
+            metronome.start();
+            return;
+        }
+        
+        console.log("Requesting metronome start from server...");
+        // Request server to coordinate start
+        window.socket.emit('metronome-start', {
+            bpm: bpm,
+            durationMs: 60000, // Run for 1 minute by default
+            sessionId: sessionId
+        });
+        metroButton.textContent = "Stop Metronome";
+    });
+
+</script>
+    
+</html>
