@@ -40,7 +40,8 @@ timeSync.on('correctionComplete', (data) => {
 
 app.get('/', (req, res) => {
     // res.send("Este es el stream")
-    res.sendFile(process.cwd() + '/public/index.html')
+    res.sendFile(process.cwd() + '/public/metronome.html')
+    // res.sendFile(process.cwd() + '/public/index.html')
 })
 
 app.get('/timeSync', (req, res) => {
