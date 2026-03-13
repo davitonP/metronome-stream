@@ -20,6 +20,7 @@ function getNow() {
 }
 
 function setClock(msRemaining) {
+    if (!clockEl) return;
     const seconds = Math.max(0, Math.ceil(msRemaining / 1000));
     clockEl.textContent = String(seconds);
     if (msRemaining <= 0) {

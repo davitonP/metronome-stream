@@ -34,13 +34,13 @@ async function loadAudioBuffer(url, context) {
     const ctx = context || getAudioContext();
 
     // Ensure context is running (sometimes needed after user interaction)
-    if (ctx.state === 'suspended') {
+    /* if (ctx.state === 'suspended') {
         try {
             await ctx.resume();
         } catch (e) {
             console.warn('Could not resume AudioContext automatically:', e);
         }
-    }
+    } */
 
     try {
         console.log(`📥 Fetching audio: ${url}`);

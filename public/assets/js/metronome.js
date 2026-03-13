@@ -227,6 +227,7 @@ async function initMetronome(bpm = 90) {
 
         window.metronomeAudioBuffer = await loadAudioBuffer("/assets/secuencias/metronome_sound/metronome2.mp3");
         window.metronomeDownbeatBuffer = await loadAudioBuffer("/assets/secuencias/metronome_sound/metronome1.mp3");
+        console.log('Metronome audio buffers loaded successfully');
 
         const metronome = new Metronomo(bpm);
         return metronome;

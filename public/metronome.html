@@ -146,32 +146,32 @@
         window.socket.emit('join-session', sessionId);
     });
     
-    initMetronome().then((m) => {
-        if (!m) return;
-        metronome = m;
-        // Listen for server command only AFTER metronome is ready
-        if (window.socket) {
-            window.socket.on('metronome-start', (data) => {
-                console.log("Received metronome-start", data);
-                if (data.bpm && data.bpm !== bpm) {
-                    metronome.setBPM(data.bpm);
-                    bpm = data.bpm;
-                    document.getElementById('bpm-slider').value = bpm;
-                    bpmLabel.textContent = bpm;
-                }
-                
-                if (metronome.isRunning) metronome.stop();
-                metronome.start(data.startAt);
-            });
+    // Socket listener for server-triggered metronome-start
+    window.socket.on('metronome-start', (data) => {
+        console.log("Received metronome-start", data);
+        if (!metronome) {
+            console.warn("⚠ Metronome not ready — user hasn't interacted yet");
+            return;
         }
+        if (data.bpm && data.bpm !== bpm) {
+            metronome.setBPM(data.bpm);
+            bpm = data.bpm;
+            document.getElementById('bpm-slider').value = bpm;
+            bpmLabel.textContent = bpm;
+        }
+        if (metronome.isPlaying) metronome.stop();
+        // Resume AudioContext in case it was suspended
+        const ctx = window.getAudioContext();
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+        metronome.start(data.startAt);
     });
 
     window.socket.on('metronome-stop', () => {
         console.log("Received metronome-stop");
-        metronome.stop();
+        if (metronome) metronome.stop();
         metroButton.textContent = "Start Metronome";
     });
-    
+
     const latencySlider = document.getElementById('latency-adjust');
     latencySlider.addEventListener('input', (e) => {
         userLatency = Number(e.target.value);
@@ -183,16 +183,12 @@
     newBpm.addEventListener('input', (e) => {
         const nextBpm = Number(e.target.value);
         bpmLabel.textContent = nextBpm;
-        //console.log(`🎶 Cambiando BPM a ${nextBpm}`);
         bpm = nextBpm;
-        if (metronome) {
-            metronome.setBPM(nextBpm);
-        }
-
-        if (!metronome.isPlaying) return;
+        if (metronome) metronome.setBPM(nextBpm);
+        if (!metronome || !metronome.isPlaying) return;
         window.socket.emit('metronome-start', {
             bpm: nextBpm,
-            durationMs: 60000, // Run for 1 minute by default
+            durationMs: 60000,
             sessionId: sessionId
         });
     });
@@ -202,15 +198,12 @@
         const nextBpm = Math.max(0, bpm - 1);
         bpmLabel.textContent = nextBpm;
         bpm = nextBpm;
-        document.getElementById('bpm-slider').value = nextBpm; // Sync slider
-        if (metronome) {
-            metronome.setBPM(nextBpm);
-        }
-
-        if (!metronome.isPlaying) return;
+        document.getElementById('bpm-slider').value = nextBpm;
+        if (metronome) metronome.setBPM(nextBpm);
+        if (!metronome || !metronome.isPlaying) return;
         window.socket.emit('metronome-start', {
             bpm: nextBpm,
-            durationMs: 60000, // Run for 1 minute by default
+            durationMs: 60000,
             sessionId: sessionId
         });
     });
@@ -220,24 +213,35 @@
         const nextBpm = Math.min(200, bpm + 1);
         bpmLabel.textContent = nextBpm;
         bpm = nextBpm;
-        document.getElementById('bpm-slider').value = nextBpm; // Sync slider
-        if (metronome) {
-            metronome.setBPM(nextBpm);
-        }
-
-        if (!metronome.isPlaying) return;
+        document.getElementById('bpm-slider').value = nextBpm;
+        if (metronome) metronome.setBPM(nextBpm);
+        if (!metronome || !metronome.isPlaying) return;
         window.socket.emit('metronome-start', {
             bpm: nextBpm,
-            durationMs: 60000, // Run for 1 minute by default
+            durationMs: 60000,
             sessionId: sessionId
         });
     });
-    
-    
+
     const metroButton = document.getElementById('metronome-start');
-    metroButton.addEventListener('click', () => {
-        if (!metronome) return;
-        console.log(metronome.isPlaying);
+    metroButton.addEventListener('click', async () => {
+        // Lazy init: create AudioContext + load audio on first user gesture
+        if (!metronome) {
+            metroButton.textContent = "Loading...";
+            metroButton.disabled = true;
+            metronome = await initMetronome(bpm);
+            metroButton.disabled = false;
+            if (!metronome) {
+                metroButton.textContent = "Start Metronome";
+                console.error("Failed to initialize metronome");
+                return;
+            }
+        }
+
+        // Resume AudioContext now — we ARE inside a user gesture
+        const ctx = window.getAudioContext();
+        if (ctx && ctx.state === 'suspended') await ctx.resume();
+
         if (metronome.isPlaying) {
             console.log("Stopping metronome...");
             metronome.stop();
@@ -245,19 +249,18 @@
             metroButton.textContent = "Start Metronome";
             return;
         }
-        
-        // If not synced yet, warn but maybe allow local start?
+
         if (!window.syncCompleted) {
             console.warn("⚠ No time sync yet, starting locally");
-            metronome.start();
+            metronome.start(Date.now() + 500);
+            metroButton.textContent = "Stop Metronome";
             return;
         }
-        
+
         console.log("Requesting metronome start from server...");
-        // Request server to coordinate start
         window.socket.emit('metronome-start', {
             bpm: bpm,
-            durationMs: 60000, // Run for 1 minute by default
+            durationMs: 60000,
             sessionId: sessionId
         });
         metroButton.textContent = "Stop Metronome";
