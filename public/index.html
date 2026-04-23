@@ -1,118 +1,93 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secuencias de Audio</title>
-    <link rel="stylesheet" href="/assets/css/output.css">
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Toolkit Music</title>
 </head>
-<body class="h-full bg-gray-50">
-    <!-- Overlay para cerrar sidebar en móvil -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
-    
-    <div class="flex h-full relative">
-        <!-- Botón hamburguesa para móviles -->
-        <button id="menu-toggle" class="fixed top-4 left-4 z-50 lg:hidden bg-white p-2 rounded-lg shadow-lg">
-            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-
-        <!-- Sidebar -->
-        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-200 flex flex-col shadow-sm transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
-            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">🎵 Secuencias</h1>
-                </div>
-                <!-- Botón cerrar en móvil -->
-                <button id="sidebar-close" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
-                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Canciones Disponibles</h2>
-                <ul id="songs-list" class="space-y-2"></ul>
-            </div>
-            
-            
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto w-full lg:w-auto">
-            <div class="max-w-4xl mx-auto p-4 lg:p-8 pt-16 lg:pt-8">
-                <div class="flex flex-row bg-white rounded-lg shadow-sm p-6 mb-6">
-                    <div class="flex flex-col flex-grow">
-                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Cuan grande es Dios</h1>
-                        <p id="time" class="text-gray-600">C mayor - 72bpm</p>
-                    </div>
-                    <div class="flex flex-col">
-                            <button id="start" disabled 
-                                class="w-full px-15 py-1 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                ▶ Comenzar
-                            </button>
-                            <button id="pause" 
-                                class="w-full px-4 py-1 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition-colors">
-                                ⏸ Pausar
-                            </button>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Letras</h2>
-                    <div>
-                        <ul id="letras-list" class="list-disc list-inside space-y-2">
-                            <li class="text-gray-600">Cargando...</li>
-                            <li class="text-gray-600">Cargando...</li>
-                        </ul>
-                    </div>
-                    <!-- <div class="space-y-3">
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <span class="text-gray-700 font-medium">Estado:</span>
-                            <span id="status" class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Conectado</span>
-                        </div>
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <span class="text-gray-700 font-medium">Canción actual:</span>
-                            <span id="current-song" class="text-gray-600">Ninguna</span>
-                        </div>
-                    </div> -->
-                </div>
-            </div>
-            <!-- <div class="p-6 border-t border-gray-200 bg-gray-50">
-                <h2 class="text-sm font-semibold text-gray-700 mb-3">Reproductor</h2>
-                <audio id="audio-player" controls class="w-full">
-                    Tu navegador no soporta el elemento de audio.
-                </audio>
-            </div> -->
-        </main>
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-hidden font-sans">
+  <div class="relative isolate px-6 py-10 lg:px-8">
+    <div class="absolute inset-x-0 top-0 -z-10 overflow-hidden blur-3xl" aria-hidden="true">
+      <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-r from-sky-600/20 via-cyan-500/10 to-violet-600/10 opacity-70" style="clip-path: polygon(74.1% 44.1%, 100% 57.4%, 89.7% 91.7%, 62.2% 100%, 39.8% 85.4%, 23.8% 68.6%, 0.5% 48.2%, 6.5% 13.9%, 28.4% 3.5%, 52.6% 0.8%, 71.3% 17.4%);"></div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/assets/js/client-webaudio.js"></script>
-    <script src="/assets/js/canciones.js"></script>
-    <!-- <script src="/assets/js/metronomo.js"></script> -->
-    <script>
-        // Toggle sidebar en móviles
-        const sidebar = document.getElementById('sidebar');
-        const menuToggle = document.getElementById('menu-toggle');
-        const sidebarClose = document.getElementById('sidebar-close');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
+    <div class="mx-auto max-w-4xl">
+      <div class="rounded-[2rem] border border-slate-800/80 bg-slate-900/90 p-8 shadow-2xl shadow-slate-950/60 backdrop-blur-xl">
+        <header class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="text-sm uppercase tracking-[0.35em] text-cyan-300/75">Herramientas para músicos y bandas</p>
+            <h1 class="mt-4 text-5xl font-semibold tracking-tight text-white sm:text-6xl">Tu centro creativo para ritmo, afinación y tiempo.</h1>
+            <p class="mt-4 max-w-2xl text-slate-300 leading-8">Un escape con estilo oscuro inspirado en la interfaz del metrónomo. Navega rápidamente entre utilidades para practicar, sincronizar ensayos y afinar tu sonido con precisión.</p>
+          </div>
+          <div class="rounded-3xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-xl shadow-slate-950/40 ring-1 ring-slate-700/50">
+            <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Sesión rápida</p>
+            <p class="mt-3 text-3xl font-semibold text-cyan-300">5+ herramientas</p>
+            <p class="mt-2 text-sm text-slate-400">Todo en un solo panel oscuro, pensado para el ritmo creativo y el trabajo de grupo.</p>
+          </div>
+        </header>
 
-        function openSidebar() {
-            sidebar.classList.remove('-translate-x-full');
-            sidebarOverlay.classList.remove('hidden');
-        }
+        <section class="mt-10 grid gap-6 lg:grid-cols-2">
+          <a href="/public/metronome.html" class="group rounded-3xl border border-slate-800/80 bg-slate-900/70 p-6 transition hover:-translate-y-1 hover:bg-slate-800/90 hover:ring-2 hover:ring-cyan-500/30">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-sm uppercase tracking-[0.3em] text-cyan-300/80">Metrónomo</p>
+                <h2 class="mt-4 text-2xl font-semibold text-white">Pulso compartido</h2>
+              </div>
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-300">
+                <span class="text-2xl">♪</span>
+              </div>
+            </div>
+            <p class="mt-5 text-sm leading-6 text-slate-400">Sincroniza tus ensayos y practica con ritmo estable, control de BPM, ajustes de latencia y soporte de sesiones colaborativas.</p>
+          </a>
 
-        function closeSidebar() {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        }
+          <a href="/public/timeSync.html" class="group rounded-3xl border border-slate-800/80 bg-slate-900/70 p-6 transition hover:-translate-y-1 hover:bg-slate-800/90 hover:ring-2 hover:ring-violet-500/30">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-sm uppercase tracking-[0.3em] text-violet-300/80">Sincronización</p>
+                <h2 class="mt-4 text-2xl font-semibold text-white">Tiempo en conjunto</h2>
+              </div>
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-300">
+                <span class="text-2xl">⏱</span>
+              </div>
+            </div>
+            <p class="mt-5 text-sm leading-6 text-slate-400">Asegura que todos los músicos escuchen el mismo pulso con latencia ajustable y conexión de sesión en vivo.</p>
+          </a>
 
-        menuToggle.addEventListener('click', openSidebar);
-        sidebarClose.addEventListener('click', closeSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
-    </script>
+          <a href="/public/tunner.html" class="group rounded-3xl border border-slate-800/80 bg-slate-900/70 p-6 transition hover:-translate-y-1 hover:bg-slate-800/90 hover:ring-2 hover:ring-emerald-500/30">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-sm uppercase tracking-[0.3em] text-emerald-300/80">Afinador</p>
+                <h2 class="mt-4 text-2xl font-semibold text-white">Tono perfecto</h2>
+              </div>
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-300">
+                <span class="text-2xl">🎸</span>
+              </div>
+            </div>
+            <p class="mt-5 text-sm leading-6 text-slate-400">Afina guitarra y voz con una interfaz clara, rápida y lista para tus sesiones de ensayo.</p>
+          </a>
+
+          <a href="/public/secuencia.html" class="group rounded-3xl border border-slate-800/80 bg-slate-900/70 p-6 transition hover:-translate-y-1 hover:bg-slate-800/90 hover:ring-2 hover:ring-orange-500/30">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-sm uppercase tracking-[0.3em] text-orange-300/80">Secuencias</p>
+                <h2 class="mt-4 text-2xl font-semibold text-white">Herramientas creativas</h2>
+              </div>
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-300">
+                <span class="text-2xl">♬</span>
+              </div>
+            </div>
+            <p class="mt-5 text-sm leading-6 text-slate-400">Explora patrones, efectos y utilidades basadas en secuencias para mejorar tu flujo musical.</p>
+          </a>
+        </section>
+
+        <div class="mt-10 rounded-3xl border border-slate-800/70 bg-slate-950/70 p-6 text-slate-300">
+          <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Consejo</p>
+          <p class="mt-3 leading-7">Para que tu banda sienta el mismo latido, comienza por una sesión compartida en el metrónomo y ajusta la latencia antes de tocar. Esta colección está diseñada como un tablero oscuro y moderno para músicos exigentes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

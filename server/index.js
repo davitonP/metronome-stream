@@ -39,7 +39,7 @@ timeSync.on('correctionComplete', (data) => {
 
 
 app.get('/', (req, res) => {
-  res.sendFile(process.cwd() + '/public/metronome.html') // por ahora sera el metronomo
+  res.sendFile(process.cwd() + '/public/index.html') // por ahora sera el metronomo
 })
 
 app.get('/timeSync', (req, res) => {
