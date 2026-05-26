@@ -1,5 +1,34 @@
 const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
+// ─── Configuración optimizada por modo ───────────────────────────────
+// Ajustar estos valores para calibrar cada modo de detección.
+const TUNER_CONFIG = {
+  guitar: {
+    fftSize: 4096,           // Mayor resolución para graves (E2=82Hz, ~7 periodos)
+    rmsThreshold: 0.01,      // Filtra ruido ambiental sin perder señal de cuerdas
+    minFreq: 60,             // Debajo de E2 para cuerdas desafinadas
+    maxFreq: 400,            // Arriba de E4 (329Hz)
+    updateInterval: 150,     // ms entre lecturas de pitch
+    stringTolerance: 30,     // Hz máximo para asociar frecuencia a una cuerda
+  },
+  bass: {
+    fftSize: 4096,           // Suficiente para E1 (41Hz), ~3-4 periodos
+    rmsThreshold: 0.01,      // Mismo umbral que guitarra
+    minFreq: 30,             // Debajo de E1 (41Hz)
+    maxFreq: 200,            // Arriba de G2 (98Hz) con margen
+    updateInterval: 200,     // Graves necesitan más datos entre lecturas
+    stringTolerance: 15,     // Cuerdas de bajo más juntas en frecuencia
+  },
+  voice: {
+    fftSize: 2048,           // Respuesta rápida, la voz es más aguda
+    rmsThreshold: 0.004,     // Más sensible: la voz tiene menos energía que cuerdas
+    minFreq: 75,             // Bajo masculino grave (~E2)
+    maxFreq: 1200,           // Soprano aguda
+    updateInterval: 80,      // Actualización rápida para seguir la voz
+    stringTolerance: 0,      // Sin detección de cuerdas
+  },
+};
+
 const guitarStrings = [
   { name: 'E (grave)', frequency: 82.41, noteNumber: 40 },
   { name: 'A', frequency: 110.00, noteNumber: 45 },
@@ -38,6 +67,10 @@ let updateIntervalId = null;
 let currentMode = 'guitar';
 let lastDetectedString = null;
 
+function getActiveConfig() {
+  return TUNER_CONFIG[currentMode] || TUNER_CONFIG.guitar;
+}
+
 function formatFrequency(freq) {
   return freq ? `${freq.toFixed(1)} Hz` : '—';
 }
@@ -68,8 +101,7 @@ function detectGuitarString(frequency) {
   
   guitarStrings.forEach((string) => {
     const diff = Math.abs(frequency - string.frequency);
-    // Aumentar tolerancia a ±60 Hz (fue 40)
-    if (diff < minDiff && diff < 60) {
+    if (diff < minDiff && diff < TUNER_CONFIG.guitar.stringTolerance) {
       minDiff = diff;
       closestString = string;
     }
@@ -86,8 +118,7 @@ function detectBassString(frequency) {
   
   bassStrings.forEach((string) => {
     const diff = Math.abs(frequency - string.frequency);
-    // Tolerancia similar a guitarra
-    if (diff < minDiff && diff < 30) {
+    if (diff < minDiff && diff < TUNER_CONFIG.bass.stringTolerance) {
       minDiff = diff;
       closestString = string;
     }
@@ -105,7 +136,8 @@ function autoCorrelate(buffer, sampleRate) {
     rms += buffer[i] * buffer[i];
   }
   rms = Math.sqrt(rms / size);
-  if (rms < 0.003) return -1;
+  const config = getActiveConfig();
+  if (rms < config.rmsThreshold) return -1;
 
   // Limitar buffer a la región con señal
   let r1 = 0, r2 = size - 1;
@@ -169,11 +201,21 @@ function autoCorrelate(buffer, sampleRate) {
     T0 = maxPos - b / (2 * a);
   }
 
-  // Rango válido de pitch para guitarra/voz: 40Hz - 1000Hz
   const freq = sampleRate / T0;
-  if (freq < 40 || freq > 1000) return -1;
+  if (freq < config.minFreq || freq > config.maxFreq) return -1;
 
   return freq;
+}
+
+function applyModeConfig() {
+  const config = getActiveConfig();
+  if (analyser) {
+    analyser.fftSize = config.fftSize;
+  }
+  if (updateIntervalId) {
+    clearInterval(updateIntervalId);
+    updateIntervalId = setInterval(monitorPitch, config.updateInterval);
+  }
 }
 
 function updateModeVisuals() {
@@ -187,15 +229,22 @@ function updateModeVisuals() {
     }
   });
 
-  dom.modeLabel.textContent = currentMode === 'guitar' ? 'Afinador de guitarra' : 'Afinador de bajo';
-  dom.modeAlt.textContent = currentMode === 'guitar' ? 'Guitarra' : 'Bajo';
+  const modeLabels = {
+    guitar: ['Afinador de guitarra', 'Guitarra'],
+    bass: ['Afinador de bajo', 'Bajo'],
+    voice: ['Monitor de voz', 'Voz'],
+  };
+  const [label, alt] = modeLabels[currentMode] || modeLabels.guitar;
+  dom.modeLabel.textContent = label;
+  dom.modeAlt.textContent = alt;
   lastDetectedString = null;
   renderTuningList();
+  applyModeConfig();
 }
 
 function renderTuningList() {
   dom.tuningList.innerHTML = '';
-  const data = currentMode === 'guitar' ? guitarStrings : bassStrings;
+  const data = currentMode === 'guitar' ? guitarStrings : currentMode === 'bass' ? bassStrings : [];
   data.forEach((item) => {
     const li = document.createElement('li');
     li.className = 'rounded-3xl border border-slate-800/80 bg-slate-950/80 p-4 text-sm text-slate-300 transition-all duration-150';
@@ -296,15 +345,16 @@ async function startTuner() {
 
     mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     sourceNode = audioContext.createMediaStreamSource(mediaStream);
+    const config = getActiveConfig();
     analyser = audioContext.createAnalyser();
-    analyser.fftSize = 2048;
+    analyser.fftSize = config.fftSize;
     sourceNode.connect(analyser);
 
     console.log('✓ Tuner started - Sample rate:', audioContext.sampleRate, 'Hz');
     dom.startButton.textContent = 'Detener afinador';
     setStatus('Micrófono activo, canta o toca una cuerda.', 'normal');
 
-    updateIntervalId = setInterval(monitorPitch, 200);
+    updateIntervalId = setInterval(monitorPitch, config.updateInterval);
   } catch (error) {
     console.error('❌ Tuner error:', error);
     setStatus('No se pudo activar el micrófono', 'error');
@@ -353,11 +403,16 @@ function monitorPitch() {
     return;
   }
   
-  // En modo guitarra, recalcular cents relativos a la cuerda detectada
+  // Recalcular cents relativos a la cuerda detectada (guitarra y bajo)
   if (currentMode === 'guitar') {
     const detectedString = detectGuitarString(frequency);
     if (detectedString) {
-      // Calcular cents relativos a la cuerda
+      const centsFromString = 1200 * Math.log2(frequency / detectedString.frequency);
+      noteData.cents = Math.round(centsFromString);
+    }
+  } else if (currentMode === 'bass') {
+    const detectedString = detectBassString(frequency);
+    if (detectedString) {
       const centsFromString = 1200 * Math.log2(frequency / detectedString.frequency);
       noteData.cents = Math.round(centsFromString);
     }
@@ -392,4 +447,12 @@ window.getTunerAnalyser = function() {
 
 window.getTunerAudioContext = function() {
   return audioContext;
+};
+
+// Permitir cambio de modo desde páginas externas (ej. visualizador de voz)
+window.setTunerMode = function(mode) {
+  if (TUNER_CONFIG[mode]) {
+    currentMode = mode;
+    updateModeVisuals();
+  }
 };

@@ -68,6 +68,9 @@
   <script src="assets/js/utils.js"></script>
   <script src="assets/js/tuner.js"></script>
   <script>
+    // Configurar tuner.js en modo voz para detección optimizada
+    if (window.setTunerMode) window.setTunerMode('voice');
+
     // ─── Visualizador: usa funciones de tuner.js expuestas en window ───
     const bgCanvas = document.getElementById('bg-canvas');
     const traceCanvas = document.getElementById('trace-canvas');
