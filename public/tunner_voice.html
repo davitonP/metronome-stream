@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Visualizador de voz — notas en el tiempo</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased">
+  <div class="relative isolate px-6 py-10 lg:px-8">
+    <!-- Fondo decorativo -->
+    <div class="absolute inset-x-0 top-0 -z-10 overflow-hidden blur-3xl" aria-hidden="true">
+      <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-r from-cyan-400/20 via-sky-500/10 to-indigo-500/10 opacity-80" style="clip-path: polygon(74.1% 44.1%, 100% 57.4%, 89.7% 91.7%, 62.2% 100%, 39.8% 85.4%, 23.8% 68.6%, 0.5% 48.2%, 6.5% 13.9%, 28.4% 3.5%, 52.6% 0.8%, 71.3% 17.4%);"></div>
+    </div>
+
+    <div class="mx-auto max-w-7xl">
+      <!-- Header -->
+      <div class="rounded-4xl border border-slate-800/80 bg-slate-900/95 p-8 shadow-2xl shadow-slate-950/60 backdrop-blur-xl">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="text-sm uppercase tracking-[0.35em] text-cyan-300/80">Visualizador de voz</p>
+            <h1 class="mt-4 text-5xl font-semibold tracking-tight text-white sm:text-6xl">Observa tus notas en tiempo real.</h1>
+            <p class="mt-4 max-w-2xl text-slate-300 leading-8">Una traza continua muestra la nota detectada en cada instante. El gráfico se desplaza para seguir tu voz o instrumento.</p>
+          </div>
+          <a href="/public/index.html" class="inline-flex items-center justify-center rounded-3xl border border-slate-800/80 bg-slate-950/80 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:border-cyan-400 hover:bg-slate-900 hover:text-cyan-200">Volver al menú</a>
+        </div>
+
+        <!-- Nota detectada + controles -->
+        <div class="mt-10 flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-slate-800/80 bg-slate-950/80 px-8 py-5">
+          <div class="flex items-center gap-6">
+            <div class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-slate-800/80 text-4xl font-black text-white shadow-inner shadow-slate-950/40">
+              <span id="tuner-note">—</span>
+            </div>
+            <div>
+              <p id="tuner-octave" class="text-sm uppercase tracking-[0.35em] text-slate-400">—</p>
+              <div class="mt-1 flex items-center gap-6">
+                <p id="tuner-frequency" class="text-2xl font-semibold text-white">— Hz</p>
+                <p id="tuner-cents" class="text-2xl font-semibold text-cyan-300">—</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div id="tuner-status" class="inline-flex rounded-full bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300 ring-1 ring-cyan-500/20">Listo para afinar.</div>
+            <button id="tuner-start" class="inline-flex items-center justify-center rounded-3xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400">Iniciar micrófono</button>
+          </div>
+        </div>
+
+        <!-- Canvas a ancho completo -->
+        <div class="mt-6 rounded-4xl border border-slate-800/80 bg-slate-950/80 p-4 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.8)]">
+          <div class="relative overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-900/70" style="aspect-ratio: 21/9; min-height: 360px;">
+            <canvas id="bg-canvas" class="absolute inset-0 w-full h-full"></canvas>
+            <canvas id="trace-canvas" class="absolute inset-0 w-full h-full"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Elementos ocultos requeridos por tuner.js -->
+  <div style="display:none">
+    <div id="tuner-mode">Visualizador de voz</div>
+    <div id="tuner-mode-alt">Voz</div>
+    <ul id="tuning-list"></ul>
+    <div data-mode="guitar"></div>
+    <div data-mode="bass"></div>
+  </div>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/tuner.js"></script>
+  <script>
+    // ─── Visualizador: usa funciones de tuner.js expuestas en window ───
+    const bgCanvas = document.getElementById('bg-canvas');
+    const traceCanvas = document.getElementById('trace-canvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const ctx = traceCanvas.getContext('2d');
+
+    const NOTE_TOP = 64; // E5 (voz aguda típica)
+    const NOTE_BOTTOM = 28; // E2 (voz grave típica)
+    const notes = [];
+    const localNoteNames = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    for (let n = NOTE_TOP; n >= NOTE_BOTTOM; n--) {
+      const name = localNoteNames[(n+120)%12];
+      const octave = Math.floor(n/12)-1;
+      notes.push({noteNumber:n,name:name+octave});
+    }
+
+    // Visual trace state
+    const LABEL_MARGIN = 52; // CSS px reservados para los labels
+    const sampleStep = 2;
+    let currentNoteNumber = null;
+    let running = false;
+    let animId = null;
+    let visualAnalyser = null;
+    let visualAudioCtx = null;
+    let buffer = null;
+    let tracePoints = [];
+    let lastSmoothedY = null;
+    const smoothAlpha = 0.25;
+    let capacity = 0;
+
+    // Background grid with note labels
+    function drawGrid(activeNoteNumber){
+      const ratio = window.devicePixelRatio || 1;
+      const cssW = bgCanvas.clientWidth;
+      const cssH = bgCanvas.clientHeight;
+      const w = Math.floor(cssW * ratio);
+      const h = Math.floor(cssH * ratio);
+      const marginPx = Math.floor(LABEL_MARGIN * ratio);
+      const rowH = cssH / notes.length;
+
+      bgCtx.clearRect(0,0,w,h);
+      bgCtx.fillStyle = '#071330';
+      bgCtx.fillRect(0,0,w,h);
+
+      // Zona de labels (fondo ligeramente distinto)
+      bgCtx.fillStyle = 'rgba(2,6,23,0.5)';
+      bgCtx.fillRect(0,0,marginPx,h);
+
+      // Separador vertical
+      bgCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+      bgCtx.lineWidth = Math.max(1, ratio);
+      bgCtx.setLineDash([]);
+      bgCtx.beginPath();
+      bgCtx.moveTo(marginPx, 0);
+      bgCtx.lineTo(marginPx, h);
+      bgCtx.stroke();
+
+      // Líneas horizontales (solo en la zona de la gráfica)
+      bgCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+      bgCtx.setLineDash([4 * ratio, 4 * ratio]);
+      bgCtx.font = `${12 * ratio}px monospace`;
+      bgCtx.textAlign = 'center';
+      bgCtx.textBaseline = 'middle';
+
+      for (let i=0;i<notes.length;i++){
+        const yCss = i*rowH + rowH/2;
+        const y = Math.floor(yCss * ratio) + 0.5;
+        const isActive = activeNoteNumber != null && notes[i].noteNumber === activeNoteNumber;
+
+        // Línea horizontal desde el margen
+        bgCtx.beginPath();
+        bgCtx.moveTo(marginPx, y);
+        bgCtx.lineTo(w, y);
+        bgCtx.stroke();
+
+        // Label: resaltado si es la nota activa
+        if (isActive) {
+          // Fondo iluminado detrás del label
+          const labelH = Math.floor(rowH * ratio);
+          bgCtx.fillStyle = 'rgba(34,211,238,0.15)';
+          bgCtx.fillRect(0, y - labelH/2, marginPx, labelH);
+          bgCtx.fillStyle = '#22d3ee';
+          bgCtx.font = `bold ${13 * ratio}px monospace`;
+        } else {
+          bgCtx.fillStyle = 'rgba(255,255,255,0.35)';
+          bgCtx.font = `${12 * ratio}px monospace`;
+        }
+        bgCtx.fillText(notes[i].name, marginPx / 2, y);
+      }
+      bgCtx.setLineDash([]);
+    }
+    drawGrid(null);
+
+    function noteToY(noteNumber){
+      const idx = notes.findIndex(n=>n.noteNumber===noteNumber);
+      if (idx === -1) return null;
+      const ratio = window.devicePixelRatio || 1;
+      const cssH = traceCanvas.clientHeight;
+      const rowH = cssH / notes.length;
+      const yCss = idx*rowH + rowH/2;
+      return yCss * ratio;
+    }
+
+    // ─── Actualizar indicadores de nota detectada ───
+    const vizNote = document.getElementById('tuner-note');
+    const vizOctave = document.getElementById('tuner-octave');
+    const vizFreq = document.getElementById('tuner-frequency');
+    const vizCents = document.getElementById('tuner-cents');
+
+    function updateVoiceDisplay(noteData) {
+      if (!noteData) {
+        vizNote.textContent = '—';
+        vizOctave.textContent = '—';
+        vizFreq.textContent = '— Hz';
+        vizCents.textContent = '—';
+        return;
+      }
+      vizNote.textContent = noteData.noteName;
+      vizOctave.textContent = `Octava ${noteData.octave}`;
+      vizFreq.textContent = `${noteData.frequency.toFixed(1)} Hz`;
+      vizCents.textContent = `${noteData.cents > 0 ? '+' : ''}${noteData.cents}¢`;
+    }
+
+    function stepTrace(){
+      if (!visualAnalyser) return;
+      const w = traceCanvas.width, h = traceCanvas.height;
+
+      if (!buffer || buffer.length !== (visualAnalyser.fftSize || 2048)) {
+        buffer = new Float32Array(visualAnalyser.fftSize || 2048);
+      }
+      visualAnalyser.getFloatTimeDomainData(buffer);
+      const freq = autoCorrelate(buffer, (window.getTunerAudioContext()||visualAudioCtx).sampleRate);
+      let y = null;
+      let noteData = null;
+      if (freq && freq>0){
+        const nd = getNoteFromFrequency(freq);
+        if (nd && typeof nd.noteNumber === 'number'){
+          y = noteToY(nd.noteNumber);
+          noteData = nd;
+        }
+      }
+
+      // Actualizar indicadores y grid con nota activa
+      const newNote = noteData ? noteData.noteNumber : null;
+      if (newNote !== currentNoteNumber) {
+        currentNoteNumber = newNote;
+        drawGrid(currentNoteNumber);
+      }
+      updateVoiceDisplay(noteData);
+
+      // Push to circular buffer
+      const ratio = window.devicePixelRatio || 1;
+      const marginPx = Math.floor(LABEL_MARGIN * ratio);
+      if (capacity === 0) {
+        const cssW = traceCanvas.clientWidth;
+        capacity = Math.max(1, Math.floor((cssW - LABEL_MARGIN) / sampleStep));
+      }
+      if (y === null) {
+        tracePoints.unshift(null);
+        lastSmoothedY = null;
+      } else {
+        if (lastSmoothedY === null) lastSmoothedY = y;
+        lastSmoothedY = lastSmoothedY + smoothAlpha * (y - lastSmoothedY);
+        tracePoints.unshift(lastSmoothedY);
+      }
+      while (tracePoints.length > capacity) tracePoints.pop();
+
+      // Redraw trace (offset por el margen de labels)
+      ctx.clearRect(0,0,w,h);
+      ctx.strokeStyle = '#22d3ee';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = 'rgba(34,211,238,0.4)';
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      for (let i=0;i<tracePoints.length;i++){
+        const px = marginPx + Math.floor(i * sampleStep * ratio);
+        const py = tracePoints[i];
+        if (py === null) continue;
+        if (i===0 || tracePoints[i-1] === null) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    function startVisualizer(){
+      if (running) return;
+      visualAnalyser = window.getTunerAnalyser && window.getTunerAnalyser();
+      visualAudioCtx = window.getTunerAudioContext && window.getTunerAudioContext();
+      if (!visualAnalyser) return;
+      running = true;
+      function loop(){
+        stepTrace();
+        animId = requestAnimationFrame(loop);
+      }
+      animId = requestAnimationFrame(loop);
+    }
+
+    function stopVisualizer(){
+      running = false;
+      if (animId) cancelAnimationFrame(animId);
+      visualAnalyser = null;
+      currentNoteNumber = null;
+      drawGrid(null);
+      updateVoiceDisplay(null);
+    }
+
+    // Poll for analyser availability
+    let pollId = setInterval(()=>{
+      if (window.getTunerAnalyser && window.getTunerAnalyser()){
+        clearInterval(pollId);
+        startVisualizer();
+      }
+    },250);
+
+    // Watch for tuner start/stop
+    setInterval(()=>{
+      if (running && window.getTunerAnalyser && !window.getTunerAnalyser()){
+        stopVisualizer();
+      }
+      if (!running && window.getTunerAnalyser && window.getTunerAnalyser()){
+        startVisualizer();
+      }
+    },500);
+
+    // Resize handling
+    function resize(){
+      const ratio = window.devicePixelRatio || 1;
+      const container = bgCanvas.parentElement;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      [bgCanvas, traceCanvas].forEach((c)=>{
+        c.width = Math.max(400, Math.floor(w * ratio));
+        c.height = Math.max(200, Math.floor(h * ratio));
+      });
+      drawGrid(currentNoteNumber);
+      const cssW = traceCanvas.clientWidth;
+      capacity = Math.max(1, Math.floor((cssW - LABEL_MARGIN) / sampleStep));
+      if (tracePoints.length > capacity) tracePoints = tracePoints.slice(0, capacity);
+      else while (tracePoints.length < capacity) tracePoints.unshift(null);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+  </script>
+</body>
+</html>

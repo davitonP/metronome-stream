@@ -105,7 +105,7 @@ function autoCorrelate(buffer, sampleRate) {
     rms += buffer[i] * buffer[i];
   }
   rms = Math.sqrt(rms / size);
-  if (rms < 0.01) return -1;
+  if (rms < 0.003) return -1;
 
   // Limitar buffer a la región con señal
   let r1 = 0, r2 = size - 1;
@@ -279,7 +279,15 @@ async function startTuner() {
     if (audioContext && audioContext.state === 'suspended') await audioContext.resume();
 
     if (!audioContext) {
-      audioContext = window.getAudioContext();
+      if (typeof window.getAudioContext === 'function') {
+        audioContext = window.getAudioContext();
+      } else {
+        // Fallback: create a local AudioContext and expose a getter
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) throw new Error('Web Audio API not available');
+        audioContext = new AudioContextClass();
+        window.getAudioContext = function() { return audioContext; };
+      }
     }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -376,3 +384,12 @@ dom.startButton.addEventListener('click', () => {
 updateModeVisuals();
 renderTuningList();
 setStatus('Listo para afinar guitarra o voz.', 'normal');
+
+// Exponer analyser y audioContext para que visualizadores externos puedan acceder
+window.getTunerAnalyser = function() {
+  return analyser;
+};
+
+window.getTunerAudioContext = function() {
+  return audioContext;
+};
