@@ -29,17 +29,17 @@ await timeSync.sync({
     coherenceValidation: true    // Validate server consistency for accuracy
 });
 
-timeSync.startAutoSync(5000);
+// timeSync.startAutoSync(5000);
 
-// Monitor when correction completes
-timeSync.on('correctionComplete', (data) => {
-    console.log(`🎯 Correction completed: ${data.finalOffset}ms`);
-    if (data.converged) console.log('Perfect precision achieved');
-});
+// // Monitor when correction completes
+// timeSync.on('correctionComplete', (data) => {
+//     console.log(`🎯 Correction completed: ${data.finalOffset}ms`);
+//     if (data.converged) console.log('Perfect precision achieved');
+// });
 
 
 app.get('/', (req, res) => {
-  res.sendFile(process.cwd() + '/public/index.html') // por ahora sera el metronomo
+  res.sendFile(process.cwd() + '/public/index.html')
 })
 
 app.get('/timeSync', (req, res) => {
@@ -103,123 +103,123 @@ server.listen(port, ()=>{
 })
 
 
-const sessions = {}; // { sessionId: { metronome: { ... }, timer: { ... } } }
+// const sessions = {}; // { sessionId: { metronome: { ... }, timer: { ... } } }
 
-io.on('connection', (socket) => {
-  console.log("un nuevo usuario conectado")
+// io.on('connection', (socket) => {
+//   console.log("un nuevo usuario conectado")
 
-  socket.on('disconnect', socket => {
-    console.log("Se ha ido un usuario")
-  })
+//   socket.on('disconnect', socket => {
+//     console.log("Se ha ido un usuario")
+//   })
 
-  // Sincronización de tiempo NTP-like
-  socket.on('time-sync', (clientTime) => {
-    const ntpNow = timeSync.now();
-    const serverTime = Number.isFinite(ntpNow) ? ntpNow : Date.now();
-    socket.emit('time-sync-response', {
-      clientTime: clientTime,
-      serverTime: serverTime
-    })
-  })
+//   // Sincronización de tiempo NTP-like
+//   socket.on('time-sync', (clientTime) => {
+//     const ntpNow = timeSync.now();
+//     const serverTime = Number.isFinite(ntpNow) ? ntpNow : Date.now();
+//     socket.emit('time-sync-response', {
+//       clientTime: clientTime,
+//       serverTime: serverTime
+//     })
+//   })
 
-  socket.on('join-session', (sessionId) => {
-    // Leave previous rooms (except the default private room which is the socket.id)
-    for (const room of socket.rooms) {
-      if (room !== socket.id) {
-        socket.leave(room);
-        console.log(`Socket left session: ${room}`);
-      }
-    }
+//   socket.on('join-session', (sessionId) => {
+//     // Leave previous rooms (except the default private room which is the socket.id)
+//     for (const room of socket.rooms) {
+//       if (room !== socket.id) {
+//         socket.leave(room);
+//         console.log(`Socket left session: ${room}`);
+//       }
+//     }
 
-    socket.join(sessionId);
-    console.log(`Socket joined session: ${sessionId}`);
+//     socket.join(sessionId);
+//     console.log(`Socket joined session: ${sessionId}`);
 
-    // Send current state of the session to the new user
-    if (sessions[sessionId]) {
-      const { metronome, timer } = sessions[sessionId];
+//     // Send current state of the session to the new user
+//     if (sessions[sessionId]) {
+//       const { metronome, timer } = sessions[sessionId];
       
-      const now = timeSync.now();
+//       const now = timeSync.now();
 
-      if (metronome) {
-        if (now < metronome.startAt + metronome.durationMs) {
-             socket.emit('metronome-start', metronome);
-        } else {
-             sessions[sessionId].metronome = null; 
-        }
-      }
+//       if (metronome) {
+//         if (now < metronome.startAt + metronome.durationMs) {
+//              socket.emit('metronome-start', metronome);
+//         } else {
+//              sessions[sessionId].metronome = null; 
+//         }
+//       }
 
-      if (timer) {
-        if (now < timer.startAt + timer.durationMs) {
-             socket.emit('timer-start', timer);
-        } else {
-             sessions[sessionId].timer = null;
-        }
-      }
-    }
-  });
+//       if (timer) {
+//         if (now < timer.startAt + timer.durationMs) {
+//              socket.emit('timer-start', timer);
+//         } else {
+//              sessions[sessionId].timer = null;
+//         }
+//       }
+//     }
+//   });
 
-  socket.on('timer-start', ({ durationMs, sessionId }) => {
-    const safeDuration = Number.isFinite(durationMs) ? durationMs : 10000;
-    const ntpNow = timeSync.now();
-    const baseNow = Number.isFinite(ntpNow) ? ntpNow : Date.now();
-    const startAt = baseNow + 1000;
-    console.log(`Iniciando timer en ${sessionId}: ${safeDuration}ms`);
+//   socket.on('timer-start', ({ durationMs, sessionId }) => {
+//     const safeDuration = Number.isFinite(durationMs) ? durationMs : 10000;
+//     const ntpNow = timeSync.now();
+//     const baseNow = Number.isFinite(ntpNow) ? ntpNow : Date.now();
+//     const startAt = baseNow + 1000;
+//     console.log(`Iniciando timer en ${sessionId}: ${safeDuration}ms`);
 
-    const timerData = { 
-      startAt,
-      durationMs: safeDuration,
-    };
+//     const timerData = { 
+//       startAt,
+//       durationMs: safeDuration,
+//     };
 
-    if (!sessions[sessionId]) sessions[sessionId] = {};
-    sessions[sessionId].timer = timerData;
+//     if (!sessions[sessionId]) sessions[sessionId] = {};
+//     sessions[sessionId].timer = timerData;
 
-    if (sessionId) {
-        io.to(sessionId).emit('timer-start', timerData);
-    } else {
-        // Fallback for legacy/global (though we should encourage sessions)
-        io.emit('timer-start', timerData); 
-    }
-  })
+//     if (sessionId) {
+//         io.to(sessionId).emit('timer-start', timerData);
+//     } else {
+//         // Fallback for legacy/global (though we should encourage sessions)
+//         io.emit('timer-start', timerData); 
+//     }
+//   })
 
-  socket.on('metronome-start', ({ bpm, durationMs, sessionId }) => {
-    const safeBpm = Number.isFinite(bpm) ? bpm : 90;
-    const safeDuration = Number.isFinite(durationMs) ? durationMs : 10000;
+//   socket.on('metronome-start', ({ bpm, durationMs, sessionId }) => {
+//     const safeBpm = Number.isFinite(bpm) ? bpm : 90;
+//     const safeDuration = Number.isFinite(durationMs) ? durationMs : 10000;
     
-    // Server assigns start time
-    const ntpNow = timeSync.now();
-    const baseNow = Number.isFinite(ntpNow) ? ntpNow : Date.now();
-    const startAt = baseNow + 2000; // Start in 2 seconds for better mobile sync
+//     // Server assigns start time
+//     const ntpNow = timeSync.now();
+//     const baseNow = Number.isFinite(ntpNow) ? ntpNow : Date.now();
+//     const startAt = baseNow + 2000; // Start in 2 seconds for better mobile sync
 
-    const metronomeSetting = { 
-      bpm: safeBpm,
-      startAt: startAt,
-      durationMs: safeDuration,
-    };
+//     const metronomeSetting = { 
+//       bpm: safeBpm,
+//       startAt: startAt,
+//       durationMs: safeDuration,
+//     };
     
-    console.log(`Broadcasting metronome-start to ${sessionId}:`, metronomeSetting);
+//     console.log(`Broadcasting metronome-start to ${sessionId}:`, metronomeSetting);
 
-    if (!sessions[sessionId]) sessions[sessionId] = {};
-    sessions[sessionId].metronome = metronomeSetting;
+//     if (!sessions[sessionId]) sessions[sessionId] = {};
+//     sessions[sessionId].metronome = metronomeSetting;
 
-    if (sessionId) {
-        io.to(sessionId).emit('metronome-start', metronomeSetting);
-    } else {
-         io.emit('metronome-start', metronomeSetting);
-    }
-  })
+//     if (sessionId) {
+//         io.to(sessionId).emit('metronome-start', metronomeSetting);
+//     } else {
+//          io.emit('metronome-start', metronomeSetting);
+//     }
+//   })
 
-  socket.on('metronome-stop', ({ sessionId }) => {
-    console.log(`Broadcasting metronome-stop to ${sessionId}`);
+//   socket.on('metronome-stop', ({ sessionId }) => {
+//     console.log(`Broadcasting metronome-stop to ${sessionId}`);
     
-    if (sessions[sessionId]) {
-        sessions[sessionId].metronome = null;
-    }
+//     if (sessions[sessionId]) {
+//         sessions[sessionId].metronome = null;
+//     }
 
-    if (sessionId) {
-        io.to(sessionId).emit('metronome-stop');
-    } else {
-        io.emit('metronome-stop');
-    }
-  })
+//     if (sessionId) {
+//         io.to(sessionId).emit('metronome-stop');
+//     } else {
+//         io.emit('metronome-stop');
+//     }
+//   })
 
-})
+// })
