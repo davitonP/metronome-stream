@@ -211,7 +211,7 @@
     let metronome = null;
     let userLatency = 0;
     let sessionId = "default";
-    let timeSignature = "4/4"; // 4/4, 3/4, 2/4, 6/8
+    let timeSignature = "4";
     let beats = [0, 1, 2, 3]; // beats count for current time signature
 
     // Session Logic
@@ -259,6 +259,7 @@
         // Update beats display and internal beats array
         const beatsContainer = document.getElementById('beats');
         const beatCount = sig;
+        timeSignature = sig;
         
         // Remove all current beat elements
         beatsContainer.innerHTML = '';
@@ -279,6 +280,7 @@
         // If metronome is playing, update it
         if (metronome) {
             metronome.setTimeSignature(beatCount);
+            console.log("Metronome time signature updated");
         }
         
         console.log(`Time signature changed to ${sig} (${beatCount} beats)`);
@@ -414,7 +416,7 @@
         if (!metronome) {
             metroButton.textContent = "Loading...";
             metroButton.disabled = true;
-            const beatCount = timeSignature === '3/4' ? 3 : timeSignature === '2/4' ? 2 : timeSignature === '6/8' ? 6 : 4;
+            const beatCount = timeSignature;
             metronome = await initMetronome(bpm, beatCount);
             metroButton.disabled = false;
             
