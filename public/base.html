@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <title>Toolkit Metrónomo</title>
+  <title>Toolkit Music</title>
   <style>
     @keyframes float {
       0%, 100% { transform: translateY(0) scale(1); }
@@ -45,40 +45,35 @@
         <header class="flex shrink-0 flex-col gap-6 lg:w-[380px] lg:justify-between">
           <div>
             <p class="text-xs uppercase tracking-[0.35em] text-cyan-300/60">Toolkit Music</p>
-            <h1 class="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[2.75rem] lg:leading-[1.15]">Metrónomo.</h1>
-            <p class="mt-4 text-sm leading-7 text-slate-400">Ritmo estable y preciso para toda tu banda. Sincroniza, ajusta BPM, elige compases y controla la latencia de audio en tiempo real.</p>
+            <h1 class="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[2.75rem] lg:leading-[1.15]">Herramientas para músicos y bandas.</h1>
+            <p class="mt-4 text-sm leading-7 text-slate-400">Navega rápidamente entre utilidades para practicar, sincronizar ensayos y afinar tu sonido con precisión.</p>
           </div>
 
           <div class="flex flex-col gap-4">
             <div class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-lg shadow-slate-950/40 ring-1 ring-slate-700/40">
-              <p class="text-[0.65rem] uppercase tracking-[0.35em] text-slate-500">Cómo empezar</p>
-              <p class="mt-2 text-sm font-semibold text-cyan-300">1. Crear sesión</p>
-              <p class="mt-1.5 text-xs leading-5 text-slate-500">Dale un nombre único a tu sesión para que todos en la banda se unan al mismo ritmo.</p>
-            </div>
-            <div class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-lg shadow-slate-950/40 ring-1 ring-slate-700/40">
-              <p class="text-[0.65rem] uppercase tracking-[0.35em] text-slate-500">Paso siguiente</p>
-              <p class="mt-2 text-sm font-semibold text-cyan-300">2. Configurar tempo</p>
-              <p class="mt-1.5 text-xs leading-5 text-slate-500">Ajusta BPM con el slider o botones, elige el compás (4/4, 3/4, 2/4, 6/8) y presiona iniciar.</p>
+              <p class="text-[0.65rem] uppercase tracking-[0.35em] text-slate-500">Sesión rápida</p>
+              <p class="mt-2 text-2xl font-semibold text-cyan-300">5+ herramientas</p>
+              <p class="mt-1.5 text-xs leading-5 text-slate-500">Todo en un solo panel oscuro, pensado para el ritmo creativo y el trabajo de grupo.</p>
             </div>
             <div class="rounded-2xl border border-slate-800/60 bg-slate-950/50 p-5">
-              <p class="text-[0.65rem] uppercase tracking-[0.3em] text-slate-500">Consejo pro</p>
-              <p class="mt-2 text-xs leading-6 text-slate-500">Ajusta el "Audio Sync Delay" si escuchas el click desfasado con el beat visual. Esto corrige problemas de latencia de tu dispositivo.</p>
+              <p class="text-[0.65rem] uppercase tracking-[0.3em] text-slate-500">Consejo</p>
+              <p class="mt-2 text-xs leading-6 text-slate-500">Comienza por una sesión compartida en el metrónomo y ajusta la latencia antes de tocar.</p>
             </div>
           </div>
         </header>
 
         <!-- Right column: tool cards -->
-        <section class="flex flex-1 flex-col gap-5 overflow-y-auto items-center justify-center">
-           <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
+        <section class="flex flex-1 flex-col gap-5 overflow-y-auto">
+           <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
         
         <!-- Session UI -->
         <div class="mb-6 bg-gray-900/50 p-4 rounded-xl border border-gray-700/50">
-             <label class="text-xs text-gray-500 font-medium uppercase block mb-2">🎵 Sesión</label>
+             <label class="text-xs text-gray-500 font-medium uppercase block mb-2">Session ID</label>
              <div class="flex gap-2">
-                <input type="text" id="session-input" value="default" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="Nombre de sesión">
-                <button id="join-btn" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Unirse</button>
+                <input type="text" id="session-input" value="default" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="Enter session name...">
+                <button id="join-btn" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Join</button>
              </div>
-             <p class="text-[10px] text-gray-400 mt-2"><span id="current-session-display" class="text-green-400 font-mono">default</span></p>
+             <p class="text-[10px] text-gray-400 mt-2">Current Session: <span id="current-session-display" class="text-green-400 font-mono">default</span></p>
         </div>
 
         <div class="text-center mb-8">
@@ -94,12 +89,14 @@
         </div>
 
         <div class="mb-8">
-            <label class="text-xs text-gray-500 font-medium uppercase block mb-3">Tempo (BPM)</label>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500 font-medium uppercase">Tempo</span>
+            </div>
             <div class="flex items-center gap-4">
                 <button 
                     id="bpm1minus" 
                     class="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-full text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-label="Bajar BPM"
+                    aria-label="Decrease BPM"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
@@ -110,9 +107,9 @@
                     type="range"
                     id="bpm-slider"
                     name="bpm"
-                    min="20"
-                    max="250"
-                    value="100"
+                    min="0"
+                    max="200"
+                    value="90"
                     step="1"
                     class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50" 
                 />
@@ -120,7 +117,7 @@
                 <button 
                     id="bpm1plus" 
                     class="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-full text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-label="Subir BPM"
+                    aria-label="Increase BPM"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -129,54 +126,9 @@
             </div>
         </div>
 
-        <div class="mb-8 bg-gray-900/50 p-4 rounded-xl w-2xl border border-gray-700/50">
-            <label class="text-xs text-gray-500 font-medium uppercase block mb-3">♫ Compás</label>
-            <div class="flex items-center gap-2 w-full">
-                <button 
-                    id="44" 
-                    class="flex-1 py-2 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-lg text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    aria-label="Compás 4/4"
-                >
-                    4/4
-                </button>
-                
-                <button 
-                    id="34" 
-                    class="flex-1 py-2 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-lg text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    aria-label="Compás 3/4"
-                >
-                    3/4
-                </button>
-                <button 
-                    id="24" 
-                    class="flex-1 py-2 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-lg text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    aria-label="Compás 2/4"
-                >
-                    2/4
-                </button>
-                
-                <button 
-                    id="68" 
-                    class="flex-1 py-2 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-lg text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    aria-label="Compás 6/8"
-                >
-                    6/8
-                </button>
-            </div>
-        </div>
-
-        <div class="mb-6">
-            <button 
-                id="metronome-start"
-                class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-green-500/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-            >
-                Ready? (Click to Initialize)
-            </button>
-        </div>
-
         <div class="mb-8 bg-gray-900/50 p-4 rounded-xl border border-gray-700/50">
             <div class="flex justify-between items-center mb-3">
-                <label class="text-xs text-gray-500 font-medium uppercase">⏱️ Audio Sync</label>
+                <label for="latency-adjust" class="text-sm font-medium text-gray-400">Audio Sync Delay</label>
                 <span class="text-xs font-mono bg-gray-700 px-2 py-1 rounded text-gray-300"><span id="latency-val">0</span> ms</span>
             </div>
             <input 
@@ -188,7 +140,15 @@
                 step="10" 
                 class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500 hover:accent-purple-400 focus:outline-none"
             />
+            <p class="text-[10px] text-gray-500 mt-2 text-center">Fine-tune if the audio is out of sync with the visual beat.</p>
         </div>
+
+        <button 
+            id="metronome-start"
+            class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-green-500/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+        >
+            Ready? (Click to Initialize)
+        </button>
     </div>
         </section>
 
@@ -211,8 +171,6 @@
     let metronome = null;
     let userLatency = 0;
     let sessionId = "default";
-    let timeSignature = "4/4"; // 4/4, 3/4, 2/4, 6/8
-    let beats = [0, 1, 2, 3]; // beats count for current time signature
 
     // Session Logic
     const sessionInput = document.getElementById('session-input');
@@ -240,59 +198,6 @@
 
     joinBtn.addEventListener('click', joinCurrentSession);
 
-    // Time Signature Buttons
-    function updateTimeSignature(sig) {
-        timeSignature = sig;
-        
-        // Remove active state from all buttons
-        document.getElementById('44').classList.remove('bg-blue-600');
-        document.getElementById('34').classList.remove('bg-blue-600');
-        document.getElementById('24').classList.remove('bg-blue-600');
-        document.getElementById('68').classList.remove('bg-blue-600');
-        
-        // Add active state to selected button
-        const selectedButton = document.getElementById(sig.replace('/', ''));
-        if (selectedButton) {
-            selectedButton.classList.add('bg-blue-600');
-        }
-        
-        // Update beats display and internal beats array
-        const beatsContainer = document.getElementById('beats');
-        const beatCount = sig;
-        
-        // Remove all current beat elements
-        beatsContainer.innerHTML = '';
-        
-        // Create new beat elements
-        for (let i = 0; i < beatCount; i++) {
-            const beatDiv = document.createElement('div');
-            beatDiv.id = `beat${i}`;
-            beatDiv.className = 'beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner';
-            beatsContainer.appendChild(beatDiv);
-        }
-        
-        // Update internal beats array
-        beats = Array.from({length: beatCount}, (_, i) => i);
-        console.log(`Time signature changed to ${sig} (${beatCount} beats)`);
-        console.log("Updated beats array:", beats);
-        
-        // If metronome is playing, update it
-        if (metronome) {
-            metronome.setTimeSignature(beatCount);
-        }
-        
-        console.log(`Time signature changed to ${sig} (${beatCount} beats)`);
-    }
-    
-    // Attach event listeners to time signature buttons
-    document.getElementById('44').addEventListener('click', () => updateTimeSignature('4'));
-    document.getElementById('34').addEventListener('click', () => updateTimeSignature('3'));
-    document.getElementById('24').addEventListener('click', () => updateTimeSignature('2'));
-    document.getElementById('68').addEventListener('click', () => updateTimeSignature('6'));
-    
-    // Initialize with 4/4
-    document.getElementById('44').classList.add('bg-blue-600');
-
     // Initial Join
     if (window.socket.connected) {
         joinCurrentSession();
@@ -317,9 +222,6 @@
             bpm = data.bpm;
             document.getElementById('bpm-slider').value = bpm;
             bpmLabel.textContent = bpm;
-        }
-        if (data.timeSignature && data.timeSignature !== timeSignature) {
-            updateTimeSignature(data.timeSignature);
         }
         if (metronome.isPlaying) metronome.stop();
         // Resume AudioContext in case it was suspended
@@ -414,8 +316,7 @@
         if (!metronome) {
             metroButton.textContent = "Loading...";
             metroButton.disabled = true;
-            const beatCount = timeSignature === '3/4' ? 3 : timeSignature === '2/4' ? 2 : timeSignature === '6/8' ? 6 : 4;
-            metronome = await initMetronome(bpm, beatCount);
+            metronome = await initMetronome(bpm);
             metroButton.disabled = false;
             
             if (!metronome) {

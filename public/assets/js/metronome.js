@@ -1,5 +1,5 @@
 class Metronomo {
-    constructor(bpm) {
+    constructor(bpm, beatsPerBar = 4) {
         this.bpm = bpm;
         this.isPlaying = false;
         this.nextNoteTime = 0.0;
@@ -9,7 +9,7 @@ class Metronomo {
         
         // Metronome beats logic
         this.currentBeat = 0;
-        this.beatsPerBar = 4; // Standard 4/4
+        this.beatsPerBar = beatsPerBar;
         
         // Sync check logic
         this.startAtServerTime = 0;
@@ -181,6 +181,7 @@ class Metronomo {
 
     displayBeat(beat) {
         const beatEl = document.getElementById(`beat${beat}`);
+        if (!beatEl) return;
         
         // Remove default state (inactive)
         beatEl.classList.remove('bg-gray-700');
@@ -190,6 +191,7 @@ class Metronomo {
         beatEl.classList.add('bg-blue-500', 'scale-125', 'shadow-[0_0_15px_rgba(59,130,246,0.8)]', 'ring-2', 'ring-blue-300');
         
         setTimeout(() => {
+            if (!beatEl) return;
             // Revert to default state
             beatEl.classList.remove('bg-blue-500', 'scale-125', 'shadow-[0_0_15px_rgba(59,130,246,0.8)]', 'ring-2', 'ring-blue-300');
             beatEl.classList.add('bg-gray-700');
@@ -203,6 +205,13 @@ class Metronomo {
     
     setBPM(bpm) {
         this.bpm = bpm;
+    }
+    
+    setTimeSignature(beatsPerBar) {
+        this.beatsPerBar = beatsPerBar;
+        // Mantener continuidad del beat actual dentro del nuevo compás
+        this.currentBeat = this.currentBeat % this.beatsPerBar;
+        console.log(`🎵 Time signature updated: ${beatsPerBar} beats per bar`);
     }
 }
 
@@ -219,7 +228,7 @@ function prepareAudioMetronome() {
 }
 
 // Initialize metronome asynchronously
-async function initMetronome(bpm = 90) {
+async function initMetronome(bpm = 90, beatsPerBar = 4) {
     try {
         if (!window.metronomeAudioContext) {
             window.metronomeAudioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -229,7 +238,7 @@ async function initMetronome(bpm = 90) {
         window.metronomeDownbeatBuffer = await loadAudioBuffer("/assets/secuencias/metronome_sound/metronome1.mp3");
         console.log('Metronome audio buffers loaded successfully');
 
-        const metronome = new Metronomo(bpm);
+        const metronome = new Metronomo(bpm, beatsPerBar);
         return metronome;
 
     } catch (error) {
