@@ -1,362 +1,207 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <title>Toolkit Music</title>
-  <style>
-    @keyframes float {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-20px) scale(1.05); }
-    }
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.7; }
-    }
-    .blob-1 { animation: float 8s ease-in-out infinite; }
-    .blob-2 { animation: float 10s ease-in-out infinite 2s; }
-    .blob-3 { animation: float 12s ease-in-out infinite 4s; }
-    .card-tool {
-      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, border-color 0.3s ease;
-    }
-    .card-tool:hover { transform: translateY(-4px); }
-    .card-soon {
-      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
-    }
-    .card-soon:hover { transform: translateY(-2px); opacity: 0.85; }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-100 font-sans">
-  <!-- Background blobs -->
-  <div class="fixed inset-0 -z-10 overflow-hidden">
-    <div class="blob-1 absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-cyan-500/8 blur-3xl"></div>
-    <div class="blob-2 absolute top-1/3 right-0 h-[400px] w-[400px] rounded-full bg-violet-500/8 blur-3xl"></div>
-    <div class="blob-3 absolute bottom-0 left-1/3 h-[350px] w-[350px] rounded-full bg-emerald-500/6 blur-3xl"></div>
-  </div>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Toolkit Music</title>
+    <style>
+        @keyframes float {
 
-  <div class="flex min-h-screen flex-col">
-    <!-- Main content -->
-    <div class="flex flex-1 items-stretch px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <div class="flex w-full flex-col gap-6 rounded-2xl border border-slate-800/80 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur-xl lg:flex-row lg:p-8">
-
-        <!-- Left column: hero + info -->
-        <header class="flex shrink-0 flex-col gap-6 lg:w-[380px] lg:justify-between">
-          <div>
-            <p class="text-xs uppercase tracking-[0.35em] text-cyan-300/60">Toolkit Music</p>
-            <h1 class="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[2.75rem] lg:leading-[1.15]">Herramientas para músicos y bandas.</h1>
-            <p class="mt-4 text-sm leading-7 text-slate-400">Navega rápidamente entre utilidades para practicar, sincronizar ensayos y afinar tu sonido con precisión.</p>
-          </div>
-
-          <div class="flex flex-col gap-4">
-            <div class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-lg shadow-slate-950/40 ring-1 ring-slate-700/40">
-              <p class="text-[0.65rem] uppercase tracking-[0.35em] text-slate-500">Sesión rápida</p>
-              <p class="mt-2 text-2xl font-semibold text-cyan-300">5+ herramientas</p>
-              <p class="mt-1.5 text-xs leading-5 text-slate-500">Todo en un solo panel oscuro, pensado para el ritmo creativo y el trabajo de grupo.</p>
-            </div>
-            <div class="rounded-2xl border border-slate-800/60 bg-slate-950/50 p-5">
-              <p class="text-[0.65rem] uppercase tracking-[0.3em] text-slate-500">Consejo</p>
-              <p class="mt-2 text-xs leading-6 text-slate-500">Comienza por una sesión compartida en el metrónomo y ajusta la latencia antes de tocar.</p>
-            </div>
-          </div>
-        </header>
-
-        <!-- Right column: tool cards -->
-        <section class="flex flex-1 flex-col gap-5 overflow-y-auto">
-           <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
-        
-        <!-- Session UI -->
-        <div class="mb-6 bg-gray-900/50 p-4 rounded-xl border border-gray-700/50">
-             <label class="text-xs text-gray-500 font-medium uppercase block mb-2">Session ID</label>
-             <div class="flex gap-2">
-                <input type="text" id="session-input" value="default" class="flex-1 bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="Enter session name...">
-                <button id="join-btn" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Join</button>
-             </div>
-             <p class="text-[10px] text-gray-400 mt-2">Current Session: <span id="current-session-display" class="text-green-400 font-mono">default</span></p>
-        </div>
-
-        <div class="text-center mb-8">
-            <h3 class="text-gray-400 uppercase tracking-widest text-sm font-semibold mb-2">BPM</h3>
-            <h1 id="bpmLabel" class="text-7xl font-black text-blue-500 tabular-nums tracking-tighter">90</h1>
-        </div>
-
-        <div id="beats" class="flex justify-center gap-6 mb-10">
-            <div id="beat0" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
-            <div id="beat1" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
-            <div id="beat2" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
-            <div id="beat3" class="beat w-6 h-6 rounded-full bg-gray-700 transition-all duration-100 shadow-inner"></div>
-        </div>
-
-        <div class="mb-8">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-xs text-gray-500 font-medium uppercase">Tempo</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <button 
-                    id="bpm1minus" 
-                    class="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-full text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-label="Decrease BPM"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                
-                <input
-                    type="range"
-                    id="bpm-slider"
-                    name="bpm"
-                    min="0"
-                    max="200"
-                    value="90"
-                    step="1"
-                    class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500 hover:accent-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50" 
-                />
-                
-                <button 
-                    id="bpm1plus" 
-                    class="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 active:bg-blue-600 rounded-full text-white font-bold transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-label="Increase BPM"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <div class="mb-8 bg-gray-900/50 p-4 rounded-xl border border-gray-700/50">
-            <div class="flex justify-between items-center mb-3">
-                <label for="latency-adjust" class="text-sm font-medium text-gray-400">Audio Sync Delay</label>
-                <span class="text-xs font-mono bg-gray-700 px-2 py-1 rounded text-gray-300"><span id="latency-val">0</span> ms</span>
-            </div>
-            <input 
-                type="range" 
-                id="latency-adjust" 
-                min="-200" 
-                max="200" 
-                value="0" 
-                step="10" 
-                class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500 hover:accent-purple-400 focus:outline-none"
-            />
-            <p class="text-[10px] text-gray-500 mt-2 text-center">Fine-tune if the audio is out of sync with the visual beat.</p>
-        </div>
-
-        <button 
-            id="metronome-start"
-            class="w-full py-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-green-500/30 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-        >
-            Ready? (Click to Initialize)
-        </button>
-    </div>
-        </section>
-
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="px-6 pb-4 text-center">
-      <p class="text-[0.6rem] uppercase tracking-[0.3em] text-slate-700">Toolkit Music · hecho para bandas</p>
-    </footer>
-  </div>
-</body>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/assets/js/utils.js"></script>   
-<script src= "/assets/js/metronome.js"></script>
-<script src="/assets/js/timeSync.js"></script>
-<script>
-
-    let bpm = 90;
-    let metronome = null;
-    let userLatency = 0;
-    let sessionId = "default";
-
-    // Session Logic
-    const sessionInput = document.getElementById('session-input');
-    const joinBtn = document.getElementById('join-btn');
-    const currentSessionDisplay = document.getElementById('current-session-display');
-
-    function joinCurrentSession() {
-        const id = sessionInput.value.trim() || "default";
-        if (id === sessionId && window.socket.connected) {
-             // Maybe re-join if needed, but usually redundant unless socket reconnected
-             window.socket.emit('join-session', sessionId);
-             return; 
-        }
-        sessionId = id;
-        console.log("Joining session:", sessionId);
-        window.socket.emit('join-session', sessionId);
-        currentSessionDisplay.textContent = sessionId;
-        
-        // Stop metronome when switching sessions to avoid confusion
-        if (metronome && metronome.isPlaying) {
-             metronome.stop();
-             setButtonStyle('start');
-        }
-    }
-
-    joinBtn.addEventListener('click', joinCurrentSession);
-
-    // Initial Join
-    if (window.socket.connected) {
-        joinCurrentSession();
-    }
-    window.socket.on('connect', () => {
-        // Re-join session on reconnect
-        console.log("Connected, joining session...");
-        // Use the current value of the input or the last stored sessionId?
-        // Let's use the variable to persist session across reconnects
-        window.socket.emit('join-session', sessionId);
-    });
-    
-    // Socket listener for server-triggered metronome-start
-    window.socket.on('metronome-start', (data) => {
-        console.log("Received metronome-start", data);
-        if (!metronome) {
-            console.warn("⚠ Metronome not ready — user hasn't interacted yet");
-            return;
-        }
-        if (data.bpm && data.bpm !== bpm) {
-            metronome.setBPM(data.bpm);
-            bpm = data.bpm;
-            document.getElementById('bpm-slider').value = bpm;
-            bpmLabel.textContent = bpm;
-        }
-        if (metronome.isPlaying) metronome.stop();
-        // Resume AudioContext in case it was suspended
-        const ctx = window.getAudioContext();
-        if (ctx && ctx.state === 'suspended') ctx.resume();
-        setButtonStyle('stop');
-        metronome.start(data.startAt);
-    });
-
-    window.socket.on('metronome-stop', () => {
-        console.log("Received metronome-stop");
-        if (metronome) metronome.stop();
-        if (metronome) { // Only update button if metronome was actually initialized
-             setButtonStyle('start');
-        }
-    });
-
-    const latencySlider = document.getElementById('latency-adjust');
-    latencySlider.addEventListener('input', (e) => {
-        userLatency = Number(e.target.value);
-        document.getElementById('latency-val').textContent = userLatency;
-        if (metronome) metronome.setUserLatency(userLatency);
-    });
-    
-    const newBpm = document.getElementById('bpm-slider');
-    newBpm.addEventListener('input', (e) => {
-        const nextBpm = Number(e.target.value);
-        bpmLabel.textContent = nextBpm;
-        bpm = nextBpm;
-        if (metronome) metronome.setBPM(nextBpm);
-        if (!metronome || !metronome.isPlaying) return;
-        window.socket.emit('metronome-start', {
-            bpm: nextBpm,
-            durationMs: 60000,
-            sessionId: sessionId
-        });
-    });
-
-    const bpm1minus = document.getElementById('bpm1minus');
-    bpm1minus.addEventListener('click', () => {
-        const nextBpm = Math.max(0, bpm - 1);
-        bpmLabel.textContent = nextBpm;
-        bpm = nextBpm;
-        document.getElementById('bpm-slider').value = nextBpm;
-        if (metronome) metronome.setBPM(nextBpm);
-        if (!metronome || !metronome.isPlaying) return;
-        window.socket.emit('metronome-start', {
-            bpm: nextBpm,
-            durationMs: 60000,
-            sessionId: sessionId
-        });
-    });
-    
-    const bpm1plus = document.getElementById('bpm1plus');
-    bpm1plus.addEventListener('click', () => {
-        const nextBpm = Math.min(200, bpm + 1);
-        bpmLabel.textContent = nextBpm;
-        bpm = nextBpm;
-        document.getElementById('bpm-slider').value = nextBpm;
-        if (metronome) metronome.setBPM(nextBpm);
-        if (!metronome || !metronome.isPlaying) return;
-        window.socket.emit('metronome-start', {
-            bpm: nextBpm,
-            durationMs: 60000,
-            sessionId: sessionId
-        });
-    });
-
-    const metroButton = document.getElementById('metronome-start');
-    
-    // Helper to update button style
-    function setButtonStyle(state) {
-        // remove old colors
-        metroButton.classList.remove('bg-green-600', 'hover:bg-green-500', 'shadow-green-500/30', 'focus:ring-green-500', 'hover:shadow-green-500/30');
-        metroButton.classList.remove('bg-blue-600', 'hover:bg-blue-500', 'shadow-blue-500/30', 'focus:ring-blue-500');
-        metroButton.classList.remove('bg-red-600', 'hover:bg-red-500', 'shadow-red-500/30', 'focus:ring-red-500');
-        
-        if (state === 'ready') {
-             metroButton.classList.add('bg-green-600', 'hover:bg-green-500', 'shadow-green-500/30', 'focus:ring-green-500');
-             metroButton.textContent = "Ready? (Click to Initialize)";
-        } else if (state === 'start') {
-             metroButton.classList.add('bg-blue-600', 'hover:bg-blue-500', 'shadow-blue-500/30', 'focus:ring-blue-500');
-             metroButton.textContent = "Start Metronome";
-        } else if (state === 'stop') {
-             metroButton.classList.add('bg-red-600', 'hover:bg-red-500', 'shadow-red-500/30', 'focus:ring-red-500');
-             metroButton.textContent = "Stop Metronome";
-        }
-    }
-
-    metroButton.addEventListener('click', async () => {
-        // Lazy init: create AudioContext + load audio on first user gesture
-        if (!metronome) {
-            metroButton.textContent = "Loading...";
-            metroButton.disabled = true;
-            metronome = await initMetronome(bpm);
-            metroButton.disabled = false;
-            
-            if (!metronome) {
-                setButtonStyle('ready');
-                console.error("Failed to initialize metronome");
-                return;
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
             }
-            
-            // Initialization successful
-            setButtonStyle('start');
-            return; // Don't start immediately after init, let user click again for "Start"
+
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
         }
 
-        // Resume AudioContext now — we ARE inside a user gesture
-        const ctx = window.getAudioContext();
-        if (ctx && ctx.state === 'suspended') await ctx.resume();
+        @keyframes pulse-glow {
 
-        if (metronome.isPlaying) {
-            console.log("Stopping metronome...");
-            metronome.stop();
-            window.socket.emit('metronome-stop', { sessionId });
-            setButtonStyle('start');
-            return;
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
         }
 
-        if (!window.syncCompleted) {
-            console.warn("⚠ No time sync yet, starting locally");
-            metronome.start(Date.now() + 500);
-            setButtonStyle('stop');
-            return;
+        .blob-1 {
+            animation: float 8s ease-in-out infinite;
         }
 
-        console.log("Requesting metronome start from server...");
-        window.socket.emit('metronome-start', {
-            bpm: bpm,
-            durationMs: 60000,
-            sessionId: sessionId
-        });
-        setButtonStyle('stop');
-    });
+        .blob-2 {
+            animation: float 10s ease-in-out infinite 2s;
+        }
 
-</script>
+        .blob-3 {
+            animation: float 12s ease-in-out infinite 4s;
+        }
+
+        .card-tool {
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.3s ease;
+        }
+
+        .card-tool:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-soon {
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        }
+
+        .card-soon:hover {
+            transform: translateY(-2px);
+            opacity: 0.85;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 font-sans">
+    <!-- Background blobs -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div class="blob-1 absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-cyan-500/8 blur-3xl"></div>
+        <div class="blob-2 absolute top-1/3 right-0 h-[400px] w-[400px] rounded-full bg-violet-500/8 blur-3xl"></div>
+        <div class="blob-3 absolute bottom-0 left-1/3 h-[350px] w-[350px] rounded-full bg-emerald-500/6 blur-3xl"></div>
+    </div>
+
+    <div class="flex min-h-screen flex-col">
+        <!-- Main content -->
+        <div class="flex flex-1 items-stretch px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+            <div
+                class="flex w-full flex-col gap-6 rounded-2xl border border-slate-800/80 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur-xl lg:flex-row lg:p-8">
+
+                <!-- Left column: hero + info -->
+                <header class="flex shrink-0 flex-col gap-6 lg:w-[380px] lg:justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.35em] text-cyan-300/60">Toolkit Music</p>
+                        <h1
+                            class="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[2.75rem] lg:leading-[1.15]">
+                            Herramientas para músicos y bandas.</h1>
+                        <p class="mt-4 text-sm leading-7 text-slate-400">Navega rápidamente entre utilidades para
+                            practicar, sincronizar ensayos y afinar tu sonido con precisión.</p>
+                    </div>
+
+                    <div class="flex flex-col gap-4">
+                        <div
+                            class="rounded-2xl border border-slate-800/80 bg-slate-950/60 p-5 shadow-lg shadow-slate-950/40 ring-1 ring-slate-700/40">
+                            <p class="text-[0.65rem] uppercase tracking-[0.35em] text-slate-500">Sesión rápida</p>
+                            <p class="mt-2 text-2xl font-semibold text-cyan-300">5+ herramientas</p>
+                            <p class="mt-1.5 text-xs leading-5 text-slate-500">Todo en un solo panel oscuro, pensado
+                                para el ritmo creativo y el trabajo de grupo.</p>
+                        </div>
+                        <div class="rounded-2xl border border-slate-800/60 bg-slate-950/50 p-5">
+                            <p class="text-[0.65rem] uppercase tracking-[0.3em] text-slate-500">Consejo</p>
+                            <p class="mt-2 text-xs leading-6 text-slate-500">Comienza por una sesión compartida en el
+                                metrónomo y ajusta la latencia antes de tocar.</p>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Right column: tool cards -->
+                <section class="flex flex-1 flex-col gap-5 overflow-y-auto">
+                    <div
+                        class="rounded-4xl border border-slate-800/80 bg-slate-950/80 p-8 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.8)]">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <p id="tuner-mode" class="text-sm uppercase tracking-[0.35em] text-emerald-300/80">
+                                    Afinador de guitarra</p>
+                                <h2 class="mt-4 text-4xl font-semibold text-white">Tono detectado</h2>
+                            </div>
+                            <div id="tuner-status"
+                                class="inline-flex rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300 ring-1 ring-emerald-500/20">
+                                Listo para afinar guitarra o bajo.</div>
+                        </div>
+
+                        <div class="mt-10 rounded-4xl border border-slate-800/90 bg-slate-900/80 p-8 text-center">
+                            <div
+                                class="inline-flex h-28 w-28 items-center justify-center rounded-full bg-slate-800/80 text-6xl font-black text-white shadow-inner shadow-slate-950/40">
+                                <span id="tuner-note">—</span>
+                            </div>
+                            <p id="tuner-octave" class="mt-4 text-sm uppercase tracking-[0.35em] text-slate-400">—</p>
+                            <div class="mt-10 grid gap-3 sm:grid-cols-3">
+                                <div
+                                    class="rounded-3xl bg-slate-950/80 p-4 text-left text-slate-300 ring-1 ring-slate-800/80">
+                                    <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Frecuencia</p>
+                                    <p id="tuner-frequency" class="mt-3 text-2xl font-semibold text-white">— Hz</p>
+                                </div>
+                                <div
+                                    class="rounded-3xl bg-slate-950/80 p-4 text-left text-slate-300 ring-1 ring-slate-800/80">
+                                    <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Desviación</p>
+                                    <p id="tuner-cents" class="mt-3 text-2xl font-semibold text-white">—</p>
+                                </div>
+                                <div
+                                    class="rounded-3xl bg-slate-950/80 p-4 text-left text-slate-300 ring-1 ring-slate-800/80">
+                                    <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Modo</p>
+                                    <p id="tuner-mode-alt" class="mt-3 text-2xl font-semibold text-emerald-300">Guitarra
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div
+                                class="mt-10 overflow-hidden rounded-4xl border border-slate-800/80 bg-slate-900/70 px-6 py-8">
+                                <div class="relative h-3 overflow-hidden rounded-full bg-slate-800/80">
+                                    <div class="absolute inset-y-0 left-1/2 w-px bg-slate-600/70"></div>
+                                    <div id="tuner-needle"
+                                        class="absolute left-1/2 top-0 h-full w-4 rounded-full bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all duration-150"
+                                        style="transform: translateX(-50%);"></div>
+                                </div>
+                                <div
+                                    class="mt-4 flex justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500">
+                                    <span>Plano</span>
+                                    <span>Afinado</span>
+                                    <span>Agudo</span>
+                                </div>
+                            </div>
+
+                            <button id="tuner-start"
+                                class="mt-10 inline-flex w-full items-center justify-center rounded-3xl bg-emerald-500 px-6 py-4 text-base font-semibold text-slate-950 transition hover:bg-emerald-400">Iniciar
+                                micrófono</button>
+                        </div>
+                    </div>
+
+                    <aside
+                        class="space-y-6 rounded-4xl border border-slate-800/80 bg-slate-950/80 p-6 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.8)]">
+                        <div class="rounded-[1.75rem] border border-slate-800/80 bg-slate-900/80 p-5">
+                            <p class="text-sm uppercase tracking-[0.35em] text-emerald-300/80">Selecciona el modo</p>
+                            <div class="mt-4 grid grid-cols-2 gap-3">
+                                <button data-mode="guitar" type="button"
+                                    class="rounded-3xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-slate-950 transition">Guitarra</button>
+                                <button data-mode="bass" type="button"
+                                    class="rounded-3xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-300 transition">Bajo</button>
+                            </div>
+                        </div>
+
+                        <div class="rounded-[1.75rem] border border-slate-800/80 bg-slate-900/80 p-5">
+                            <p class="text-sm uppercase tracking-[0.35em] text-slate-500">Cuerdas / guía de notas</p>
+                            <ul id="tuning-list" class="mt-4 space-y-3"></ul>
+                        </div>
+
+                        <div class="rounded-[1.75rem] border border-slate-800/80 bg-slate-900/80 p-5 text-slate-300">
+                            <p class="text-sm uppercase tracking-[0.35em] text-slate-500">Consejos rápidos</p>
+                            <ul class="mt-4 space-y-3 text-sm leading-6">
+                                <li>1. Afina con la cuerda al aire y mantén la púa suave.</li>
+                                <li>2. Para bajo, toca cada cuerda individualmente para una afinación precisa.</li>
+                                <li>3. Si la barra se mueve hacia la izquierda, estás plano; hacia la derecha, agudo.
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="px-6 pb-4 text-center">
+            <p class="text-[0.6rem] uppercase tracking-[0.3em] text-slate-700">Toolkit Music · hecho para bandas</p>
+        </footer>
+    </div>
+</body>
 </html>

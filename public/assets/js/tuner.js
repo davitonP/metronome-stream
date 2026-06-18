@@ -352,7 +352,7 @@ async function startTuner() {
 
     console.log('✓ Tuner started - Sample rate:', audioContext.sampleRate, 'Hz');
     dom.startButton.textContent = 'Detener afinador';
-    setStatus('Micrófono activo, canta o toca una cuerda.', 'normal');
+    // setStatus('Micrófono activo, canta o toca una cuerda.', 'normal');
 
     updateIntervalId = setInterval(monitorPitch, config.updateInterval);
   } catch (error) {
@@ -380,8 +380,8 @@ function stopTuner() {
   }
 
   dom.startButton.textContent = 'Iniciar micrófono';
-  setStatus('Afinador detenido. Presiona para volver a iniciar.', 'warn');
-  updateTuner(null);
+  // setStatus('Afinador detenido. Presiona para volver a iniciar.', 'warn');
+  // updateTuner(null);
 }
 
 function monitorPitch() {
