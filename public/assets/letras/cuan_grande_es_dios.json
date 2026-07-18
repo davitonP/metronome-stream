@@ -1,16 +1,124 @@
 {
-    "title": "Cuan grande es Dios",
-    "letras": {
-        "verso1": "El esplendor de un rey\n Vestido en majestad\n La tierra alegre está\n La tierra alegre está\n\n Cubierto está de luz\n Venció la oscuridad\n Y tiembla a su voz\n Y tiembla a su voz",
-        "coro": "Cuán grande es Dios Cántale cuán grande es Dios\n Y todos lo verán, cuán grande es Dios",
-        "verso2": "Día a día él está\n el tiempo está en él\n Principio y el fin]\n Principio y el fin.\n\n La trinidad en Dios\n El padre, hijo, espíritu\n Cordero y el león\n Cordero y el león",
-        "puente": "Tu Nombre sobre todo es\n Eres digno de alabar\n Y mi ser dirá\n Cuan grande es Dios"
+    "metadata": {
+        "title": "Cuan grande es Dios",
+        "artist": "En espíritu y en verdad",
+        "bpm": 72,
+        "timeSignature": "4/4",
+        "key": "C",
+        "videoid-youtube": "drFvhcWYS3U"
     },
-    "acordes": {
-        "verso1": "C Am F G\n C Am F G\n C Am F G\n C Am F G",
-        "coro": "C Am F G\n C Am F G\n C Am F G\n C Am F G",
-        "verso2": "C Am F G\n C Am F G\n C Am F G\n C Am F G",
-        "puente": "C Am F G\n C Am F G"
-    },
-    "tempo": 72
+    "sections": [
+        {
+            "name": "Intro",
+            "startVideo": 0,
+            "startMeasure": 1,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "C",
+                    "text": "",
+                    "duration": 8
+                },
+                {
+                    "measure": 2,
+                    "chord": "Am",
+                    "text": "",
+                    "duration": 8
+                }
+            ]
+        },
+        {
+            "name": "Verso",
+            "startVideo": 1.5,
+            "startMeasure": 1,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "C",
+                    "text": "El esplendor de un rey",
+                    "duration": 8
+                },
+                {
+                    "measure": 2,
+                    "chord": "Am",
+                    "text": "Vestido en majestad, a tierra alegre está",
+                    "duration": 8
+                },
+                {
+                    "measure": 3,
+                    "chord": "F",
+                    "text": "La tierra alegre está",
+                    "duration": 4
+                },
+                {
+                    "measure": 4,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 5,
+                    "chord": "C",
+                    "text": "Cubierto está de luz",
+                    "duration": 8
+                },
+                {
+                    "measure": 6,
+                    "chord": "Am",
+                    "text": "Venció la oscuridad, Y tiembla a su voz",
+                    "duration": 8
+                },
+                {
+                    "measure": 7,
+                    "chord": "F",
+                    "text": "Y tiembla a su voz",
+                    "duration": 4
+                },
+                {
+                    "measure": 8,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                }
+            ]
+        },
+        {
+            "name": "Coro",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 9,
+                    "chord": "C",
+                    "text": "Cuán grande es Dios",
+                    "duration": 8
+                },
+                {
+                    "measure": 10,
+                    "chord": "Am",
+                    "text": "Cántale cuán grande es Dios",
+                    "duration": 8
+                },
+                {
+                    "measure": 11,
+                    "chord": "F",
+                    "text": "Y todos lo verán, cuán grande es",
+                    "duration": 4
+                },
+                {
+                    "measure": 12,
+                    "chord": "G",
+                    "text": "Dios",
+                    "duration": 4
+                }
+            ]
+        }
+    ],
+    "structure": [
+        "intro",
+        "verso1",
+        "coro",
+        "verso2",
+        "puente"
+    ]
 }

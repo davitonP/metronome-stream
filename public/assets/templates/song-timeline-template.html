@@ -1,0 +1,16 @@
+<section class="rounded-[28px] border border-slate-800/80 bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.12),_transparent_40%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(2,6,23,0.98))] p-5 shadow-[0_35px_90px_-40px_rgba(15,23,42,0.95)]">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="text-[0.7rem] uppercase tracking-[0.35em] text-cyan-300/70">Linea de tiempo</p>
+      <h3 class="mt-2 text-2xl font-semibold text-white">Acordes de la canción</h3>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex rounded-xl border border-slate-800/80 bg-slate-900/70 p-1" role="group" aria-label="Modo de animación">
+            <button type="button" data-mode="izquierda" class="timeline-mode-btn rounded-lg px-3 py-1.5 text-xs font-semibold transition bg-cyan-500/15 text-cyan-200">Izquierda</button>
+            <button type="button" data-mode="seguir" class="timeline-mode-btn rounded-lg px-3 py-1.5 text-xs font-semibold transition text-slate-400 hover:text-slate-200">Seguir</button>
+        </div>
+    </div>
+    
+  </div>
+  <div id="timeline-container" class="mt-5 space-y-4 text-slate-300"></div>
+</section>

@@ -22,6 +22,7 @@ async function loadSongs() {
 
         songs.forEach(song => {
             const li = document.createElement('li');
+            li.className = 'cursor-pointer rounded-2xl border border-slate-800/70 bg-slate-900/70 px-3 py-2 text-sm text-slate-300 transition hover:border-cyan-400/40 hover:bg-slate-800/80';
             li.textContent = song;
             li.dataset.filename = song;
             li.addEventListener('click', () => socket.emit('song-selected', song));

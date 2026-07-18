@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "title": "Al Que Me Ciñe de Poder",
+    "artist": "Jesús Adrián Romero",
+    "bpm": 104,
+    "timeSignature": "4/4",
+    "key": "F#"
+  },
+  "sections": [
+    {
+      "name": "Verso",
+      "startMeasure": 1,
+      "items": [
+        {
+          "measure": 1,
+          "chord": "E",
+          "text": "Al que me ciñe de poder",
+          "duration": 4
+        },
+        {
+          "measure": 2,
+          "chord": "C#m",
+          "text": "Al que le di victoria es",
+          "duration": 4
+        },
+        {
+          "measure": 3,
+          "chord": "A",
+          "text": "Sólo a él",
+          "duration": 2
+        },
+        {
+          "measure": 3,
+          "beat": 3,
+          "chord": "B",
+          "text": "alabaré",
+          "duration": 2
+        },
+        {
+          "measure": 4,
+          "chord": "E",
+          "text": "Sólo a él exaltaré",
+          "duration": 4
+        }
+      ]
+    },
+    {
+      "name": "Coro",
+      "startMeasure": 5,
+      "items": [
+        {
+          "measure": 5,
+          "chord": "A",
+          "text": "De ti será mi alabanza",
+          "duration": 2
+        },
+        {
+          "measure": 5,
+          "beat": 3,
+          "chord": "B",
+          "text": "",
+          "duration": 2
+        },
+        {
+          "measure": 6,
+          "chord": "E",
+          "text": "",
+          "duration": 4
+        }
+      ]
+    }
+  ]
+}
