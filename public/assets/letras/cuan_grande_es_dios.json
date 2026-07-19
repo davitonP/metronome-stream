@@ -36,25 +36,25 @@
                 {
                     "measure": 1,
                     "chord": "C",
-                    "text": "El esplendor de un rey",
+                    "text": "El %es%plendor de un rey",
                     "duration": 8
                 },
                 {
                     "measure": 2,
                     "chord": "Am",
-                    "text": "Vestido en majestad, a tierra alegre está",
+                    "text": "Ves%ti%do en majestad",
                     "duration": 8
                 },
                 {
                     "measure": 3,
                     "chord": "F",
-                    "text": "La tierra alegre está",
+                    "text": "la tierra alegre es%tá%",
                     "duration": 4
                 },
                 {
                     "measure": 4,
                     "chord": "G",
-                    "text": "",
+                    "text": "la tierra alegre es%tá%",
                     "duration": 4
                 },
                 {
@@ -128,50 +128,87 @@
                 {
                     "measure": 1,
                     "chord": "C",
-                    "text": "El esplendor de un rey",
+                    "text": "Día a día él está",
                     "duration": 8
                 },
                 {
                     "measure": 2,
                     "chord": "Am",
-                    "text": "Vestido en majestad, a tierra alegre está",
+                    "text": "Y el tiempo está en Él, Principio y el",
                     "duration": 8
                 },
                 {
                     "measure": 3,
                     "chord": "F",
-                    "text": "La tierra alegre está",
+                    "text": "fin, Principio y el",
                     "duration": 4
                 },
                 {
                     "measure": 4,
                     "chord": "G",
-                    "text": "",
+                    "text": "fin",
                     "duration": 4
                 },
                 {
                     "measure": 5,
                     "chord": "C",
-                    "text": "Cubierto está de luz",
+                    "text": "La trinidad en Dios",
                     "duration": 8
                 },
                 {
                     "measure": 6,
                     "chord": "Am",
-                    "text": "Venció la oscuridad, Y tiembla a su voz",
+                    "text": "El padre, hijo, espíritu, Cordero y el",
                     "duration": 8
                 },
                 {
                     "measure": 7,
                     "chord": "F",
-                    "text": "Y tiembla a su voz",
+                    "text": "león, Cordero y el",
                     "duration": 4
                 },
                 {
                     "measure": 8,
                     "chord": "G",
-                    "text": "",
+                    "text": "león",
                     "duration": 4
+                }
+            ]
+        },
+        {
+            "name": "puente",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 9,
+                    "chord": "C",
+                    "text": "Y Tu Nombre sobre todo es",
+                    "duration": 8
+                },
+                {
+                    "measure": 10,
+                    "chord": "Am",
+                    "text": "Tu eres Digno de alabar",
+                    "duration": 8
+                },
+                {
+                    "measure": 11,
+                    "chord": "F",
+                    "text": "Y mi ser dirá",
+                    "duration": 4
+                },
+                {
+                    "measure": 12,
+                    "chord": "G",
+                    "text": "Cuan grande es Dios",
+                    "duration": 4
+                },
+                {
+                    "measure": 13,
+                    "chord": "C",
+                    "text": "",
+                    "duration": 8
                 }
             ]
         }
@@ -183,6 +220,13 @@
         "verso1",
         "coro",
         "coro",
-        "verso2"
+        "verso2",
+        "coro",
+        "coro",
+        "puente",
+        "puente",
+        "coro",
+        "coro",
+        "coro"
     ]
 }

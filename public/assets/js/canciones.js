@@ -78,7 +78,7 @@ function updateSongInfo(song) {
     title.textContent = song.title
     artist.textContent = song.artist
     key.textContent = song.key
-    tempo.textContent = song.tempo
+    tempo.textContent = song.bpm
     timeSignature.textContent = song.timeSignature
 }
 
@@ -157,21 +157,51 @@ async function renderSongTimeline() {
     if (Array.isArray(songData.sections) && songData.sections.length > 0) {
         track.className = "space-y-4"
 
+        // Resolvemos el orden real de las secciones desde `structure` (lista de
+        // nombres, con repeticiones). Así el Coro se define una sola vez en
+        // `sections` pero puede aparecer varias veces en el timeline.
+        const sectionDefs = songData.sections
+        const sectionByName = new Map()
+        sectionDefs.forEach((section) => {
+            if (section && section.name) {
+                sectionByName.set(String(section.name).toLowerCase(), section)
+            }
+        })
+        const structureList = Array.isArray(songData.structure) && songData.structure.length > 0
+            ? songData.structure
+            : sectionDefs.map((section) => section.name)
+        // Una instancia por entrada de structure (cada repetición es única).
+        const sectionInstances = structureList.map((name, index) => {
+            const rawName = String(name)
+            const def = sectionByName.get(rawName.toLowerCase())
+            if (!def) {
+                console.warn(`La entrada "${rawName}" en structure no coincide con ninguna sección definida (disponibles: ${sectionDefs.map(s => s.name).join(", ")}).`)
+                return { index, name: rawName, def: { name: rawName, items: [] }, missing: true, rawName }
+            }
+            return { index, name: def.name || rawName, def }
+        })
+        const missingSections = sectionInstances.filter((i) => i.missing)
+
         // Flatten sections -> one grid cell per beat + one lyric entry per item
         const cells = []
+        const lyricCells = []
         const lyrics = []
         let prevMeasure = null
         let itemIndex = 0
 
-        songData.sections.forEach((section, sectionIndex) => {
+        sectionInstances.forEach((instance) => {
+            const section = instance.def
             const items = Array.isArray(section.items) ? section.items : []
+            // Reiniciamos el compás previo al iniciar cada instancia para que
+            // las secciones repetidas arranquen con borde de compás limpio.
+            prevMeasure = null
             items.forEach((item) => {
                 const beats = Math.max(1, Math.floor(Number(item.duration) || 1))
                 const startsMeasure = item.measure !== prevMeasure && (!item.beat || item.beat === 1)
 
                 lyrics.push({
                     itemIndex,
-                    sectionName: section.name || "",
+                    sectionName: instance.name,
                     chord: item.chord || "",
                     text: item.text || ""
                 })
@@ -179,10 +209,18 @@ async function renderSongTimeline() {
                 for (let beat = 0; beat < beats; beat += 1) {
                     cells.push({
                         itemIndex,
-                        sectionIndex,
-                        sectionName: section.name || "",
+                        sectionIndex: instance.index,
+                        sectionName: instance.name,
                         chord: beat === 0 ? (item.chord || "") : "",
                         measureStart: beat === 0 && startsMeasure
+                    })
+                    // Celda de letra por beat: el texto va en el primer beat
+                    // del ítem y se desborda sobre los siguientes visualmente.
+                    lyricCells.push({
+                        itemIndex,
+                        beatFirst: beat === 0,
+                        chord: beat === 0 ? (item.chord || "") : "",
+                        text: beat === 0 ? (item.text || "") : ""
                     })
                 }
 
@@ -192,12 +230,17 @@ async function renderSongTimeline() {
         })
 
         // ---- Dark chord-grid card ----
+        // El grid de acordes y la fila de letra comparten el mismo contenedor
+        // con scroll horizontal, así la letra se mueve junto con los acordes.
         const card = document.createElement("div")
         card.className = "overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-950/70 shadow-xl"
 
+        const scroller = document.createElement("div")
+        scroller.id = "chord-grid"
+        scroller.className = "overflow-x-auto"
+
         const grid = document.createElement("div")
-        grid.id = "chord-grid"
-        grid.className = "flex overflow-x-auto"
+        grid.className = "flex"
 
         cells.forEach((cell, index) => {
             const cellEl = document.createElement("div")
@@ -227,50 +270,93 @@ async function renderSongTimeline() {
             grid.appendChild(cellEl)
         })
 
-        const letraTab = document.createElement("div")
-        letraTab.className = "flex justify-center border-t border-slate-800/80 py-2"
+        // Fila de letra: una celda por beat, alineada con el grid de acordes.
+        const lyricRow = document.createElement("div")
+        lyricRow.className = "flex border-t border-slate-800/80"
+        lyricCells.forEach((lc, index) => {
+            const cellEl = document.createElement("div")
+            cellEl.dataset.step = index
+            cellEl.dataset.item = lc.itemIndex
+            cellEl.className = [
+                "relative min-h-[64px] min-w-[68px] flex-1 border-r border-slate-800/60 px-3 py-2",
+                lc.beatFirst ? "border-l-2 border-l-slate-600/60" : "",
+                "transition-colors duration-200"
+            ].join(" ")
 
-
-        card.appendChild(grid)
-        card.appendChild(letraTab)
-
-        // Lyrics panel, revealed by the "Letra" tab
-        const lyricTrack = document.createElement("div")
-        lyricTrack.className = "rounded-2xl border border-slate-800/80 bg-slate-950/70 p-4"
-        const lyricItems = document.createElement("div")
-        lyricItems.className = "flex gap-3 overflow-x-auto pb-2"
-        lyrics.forEach((ly) => {
-            const lyricCard = document.createElement("div")
-            lyricCard.dataset.item = ly.itemIndex
-            lyricCard.className = "min-w-[220px] rounded-2xl border border-slate-800/80 bg-slate-900/70 p-3 transition-all duration-300"
-            const chordTag = document.createElement("p")
-            chordTag.className = "text-xs font-semibold uppercase tracking-wide text-cyan-300"
-            chordTag.textContent = ly.chord ? toSolfege(ly.chord) : ""
-            const lyricText = document.createElement("p")
-            lyricText.className = "mt-1 text-sm leading-6 text-slate-100"
-            lyricText.textContent = ly.text || "—"
-            lyricCard.appendChild(chordTag)
-            lyricCard.appendChild(lyricText)
-            lyricItems.appendChild(lyricCard)
+            if (lc.beatFirst) {
+                // Se vuelve a colocar el acorde
+                if (lc.chord) {
+                    const chordTag = document.createElement("p")
+                    chordTag.className = "text-[0.65rem] font-semibold uppercase tracking-wide text-cyan-300/80"
+                    chordTag.textContent = toSolfege(lc.chord)
+                    cellEl.appendChild(chordTag)
+                }
+                // La sílaba alineada con el acorde se marca con %sílaba%.
+                // Ej: "El %es%plendor de un rey" -> before="El ", sílaba="es",
+                // after="plendor de un rey". La sílaba queda al inicio de la
+                // casilla (alineada con el acorde); "before" se desborda a la
+                // izquierda (parte del acorde previo) y "after" fluye a la derecha.
+                const raw = lc.text || ""
+                const match = raw.match(/^(.*?)%([^%]*)%([\s\S]*)$/)
+                const lyricWrapper = document.createElement("p")
+                lyricWrapper.className = "relative mt-0.5 whitespace-nowrap text-md leading-5"
+                if (match) {
+                    const [, before, syllable, after] = match
+                    // Mismo color para todo el texto; solo la sílaba va en negrita.
+                    const baseTextClass = "text-slate-100"
+                    if (before) {
+                        const beforeSpan = document.createElement("span")
+                        beforeSpan.className = `absolute right-full whitespace-nowrap ${baseTextClass} text-right`
+                        // Preserva un espacio final colapsable entre spans.
+                        beforeSpan.textContent = before.replace(/ $/, "\u00A0")
+                        lyricWrapper.appendChild(beforeSpan)
+                    }
+                    if (syllable) {
+                        const syllSpan = document.createElement("span")
+                        syllSpan.className = `font-semibold ${baseTextClass}`
+                        syllSpan.textContent = syllable
+                        lyricWrapper.appendChild(syllSpan)
+                    }
+                    if (after) {
+                        const afterSpan = document.createElement("span")
+                        afterSpan.className = baseTextClass
+                        // Preserva un espacio inicial colapsable en la frontera.
+                        afterSpan.textContent = after.replace(/^ /, "\u00A0")
+                        lyricWrapper.appendChild(afterSpan)
+                    }
+                } else {
+                    lyricWrapper.classList.add("text-slate-100")
+                    lyricWrapper.textContent = raw
+                }
+                cellEl.appendChild(lyricWrapper)
+            }
+            lyricRow.appendChild(cellEl)
         })
-        lyricTrack.appendChild(lyricItems)
+
+        scroller.appendChild(grid)
+        scroller.appendChild(lyricRow)
+        card.appendChild(scroller)
 
         track.appendChild(card)
-        track.appendChild(lyricTrack)
         windowLetra.appendChild(track)
 
-        // Section cards (current section indicator)
+        // Section cards (current section indicator) — una por entrada de structure
         const sectionsContainer = document.getElementById("timeline-sections")
         const sectionCards = []
         if (sectionsContainer) {
             sectionsContainer.innerHTML = ""
-            songData.sections.forEach((section, index) => {
+            sectionInstances.forEach((instance) => {
                 const card = document.createElement("button")
                 card.type = "button"
-                card.dataset.section = String(index)
-                card.className = "min-w-[100px] rounded-2xl border border-slate-800/80 bg-slate-900/70 p-3 transition-all duration-300 "
-                // card.className = "inline-flex h-12 min-w-[3rem] shrink-0 items-center justify-center rounded-2xl border border-slate-800/80 bg-slate-900/70 px-4 text-xs font-semibold text-slate-300 transition hover:border-cyan-400/40 hover:text-slate-100"
-                card.textContent = section.name || `Sección ${index + 1}`
+                card.dataset.section = String(instance.index)
+                if (instance.missing) {
+                    card.className = "min-w-[100px] cursor-not-allowed rounded-2xl border-2 border-dashed border-amber-400/70 bg-amber-500/10 p-3 text-amber-200 transition-all duration-300"
+                    card.title = `La entrada "${instance.rawName}" en structure no coincide con ninguna sección definida. Revisa que el nombre coincida con alguno de: ${sectionDefs.map(s => s.name).join(", ")}.`
+                    card.textContent = `⚠ ${instance.name}`
+                } else {
+                    card.className = "min-w-[100px] cursor-pointer rounded-2xl border border-slate-800/80 bg-slate-900/70 p-3 transition-all duration-300 hover:border-cyan-400/40 hover:text-slate-100"
+                    card.textContent = instance.name || `Sección ${instance.index + 1}`
+                }
                 sectionsContainer.appendChild(card)
                 sectionCards.push(card)
             })
@@ -278,7 +364,7 @@ async function renderSongTimeline() {
 
         // Highlight the currently playing beat cell (and its lyric line)
         const gridCells = Array.from(grid.querySelectorAll("[data-step]"))
-        const lyricCards = Array.from(lyricItems.querySelectorAll("[data-item]"))
+        const lyricCellsEls = Array.from(lyricRow.querySelectorAll("[data-step]"))
         let activeIndex = 0
 
         const renderActive = () => {
@@ -300,12 +386,11 @@ async function renderSongTimeline() {
                 }
             })
 
+            // Resalta la celda de letra del beat actual (alineada con el acorde)
             const activeItem = gridCells[activeIndex]?.dataset.item
-            lyricCards.forEach((lyricCard) => {
-                const isActive = lyricCard.dataset.item === activeItem
-                lyricCard.classList.toggle("border-cyan-400/60", isActive)
-                lyricCard.classList.toggle("bg-cyan-500/10", isActive)
-                lyricCard.classList.toggle("scale-[1.02]", isActive)
+            lyricCellsEls.forEach((lyricCell) => {
+                const isActive = lyricCell.dataset.step === String(activeIndex)
+                lyricCell.classList.toggle("bg-cyan-500/10", isActive)
             })
 
             const currentSectionIndex = cells[activeIndex]?.sectionIndex
@@ -317,30 +402,31 @@ async function renderSongTimeline() {
                 card.classList.toggle("shadow-[0_0_24px_-6px_rgba(34,211,238,0.7)]", isActive)
             })
 
+            // El scroll se controla desde `scroller` (contiene acordes + letra)
             const activeCell = gridCells[activeIndex]
             if (activeCell) {
-                const maxScroll = grid.scrollWidth - grid.clientWidth
-                const gridRect = grid.getBoundingClientRect()
+                const maxScroll = scroller.scrollWidth - scroller.clientWidth
+                const scrollerRect = scroller.getBoundingClientRect()
                 const cellRect = activeCell.getBoundingClientRect()
-                const cellLeftInContent = cellRect.left - gridRect.left + grid.scrollLeft
+                const cellLeftInContent = cellRect.left - scrollerRect.left + scroller.scrollLeft
                 const cellWidth = cellRect.width
 
                 if (timelineScrollMode === "izquierda") {
                     const cellsToLeft = 3
                     const target =
                         cellLeftInContent - cellsToLeft * cellWidth
-                    grid.scrollTo({
+                    scroller.scrollTo({
                         left: Math.max(0, Math.min(target, maxScroll)),
                         behavior: "smooth"
                     })
                 } else {
                     const isVisible =
-                        cellRect.left >= gridRect.left && cellRect.right <= gridRect.right
+                        cellRect.left >= scrollerRect.left && cellRect.right <= scrollerRect.right
                     if (!isVisible) {
                         const target =
                             cellLeftInContent + cellWidth / 2 -
-                            grid.clientWidth / 4
-                        grid.scrollTo({
+                            scroller.clientWidth / 4
+                        scroller.scrollTo({
                             left: Math.max(0, Math.min(target, maxScroll)),
                             behavior: "smooth"
                         })
@@ -366,9 +452,11 @@ async function renderSongTimeline() {
         const statusLabel = statusBadge?.querySelector("[data-status-label]")
         let isPlaying = false
         let pendingPlay = false
+        let pendingPlaySkipDelay = false
         let pendingPlayFallback = null
         let countingDown = false
         let countdownToken = 0
+        let pendingSeek = null
 
         const countdownOverlay = document.getElementById("countdown-overlay")
         const countdownNumber = countdownOverlay?.querySelector(".countdown-number")
@@ -437,9 +525,10 @@ async function renderSongTimeline() {
         }
         // Arranca el timeline tras el animationDelay del JSON, para que la
         // animación comience cuando realmente inicia la canción en el video.
-        const startTimelineAfterDelay = () => {
+        // skipDelay = true omite el retardo (usado al saltar a una sección).
+        const startTimelineAfterDelay = ({ skipDelay = false } = {}) => {
             clearTimelineDelay()
-            if (animationDelayMs > 0) {
+            if (!skipDelay && animationDelayMs > 0) {
                 timelineDelayTimeout = setTimeout(() => {
                     timelineDelayTimeout = null
                     startTimeline()
@@ -459,14 +548,14 @@ async function renderSongTimeline() {
             }
         }
 
-        const setPlaying = (playing, { fromYoutube = false } = {}) => {
+        const setPlaying = (playing, { fromYoutube = false, skipDelay = false } = {}) => {
             // El video confirma reproducción: si estábamos esperando su carga,
             // arrancamos el timeline ahora para no ir por delante del video.
             if (fromYoutube && isPlaying === playing) {
                 if (playing && pendingPlay) {
                     pendingPlay = false
                     clearPendingFallback()
-                    startTimelineAfterDelay()
+                    startTimelineAfterDelay({ skipDelay: pendingPlaySkipDelay })
                 }
                 return
             }
@@ -493,21 +582,23 @@ async function renderSongTimeline() {
                 // evitar que vaya por delante. Respaldo por si falla la carga.
                 if (!fromYoutube && !ytPlayerReady) {
                     pendingPlay = true
+                    pendingPlaySkipDelay = skipDelay
                     stopTimeline()
                     clearPendingFallback()
                     pendingPlayFallback = setTimeout(() => {
                         if (pendingPlay) {
                             pendingPlay = false
-                            startTimelineAfterDelay()
+                            startTimelineAfterDelay({ skipDelay: pendingPlaySkipDelay })
                         }
                     }, 4000)
                 } else {
                     pendingPlay = false
                     clearPendingFallback()
-                    startTimelineAfterDelay()
+                    startTimelineAfterDelay({ skipDelay })
                 }
             } else {
                 pendingPlay = false
+                pendingSeek = null
                 clearPendingFallback()
                 stopTimeline()
             }
@@ -517,11 +608,15 @@ async function renderSongTimeline() {
         // Sincroniza el botón de play con los cambios de estado del video de YouTube.
         ytStateHandler = (state) => {
             // Durante el conteo regresivo, el video se precarga pero no debe
-            // sonar: si empieza a reproducir, lo pausamos e ignoramos el estado
-            // hasta que el conteo termine.
+            // sonar: si empieza a reproducir, lo pausamos. Si acaba de quedar
+            // listo (sync), aplicamos un seek pendiente para posicionarlo en la
+            // sección elegida, sin reproducir hasta que termine el conteo.
             if (countingDown) {
                 if (state === "playing" && ytPlayer && ytPlayerReady) {
                     ytPlayer.pauseVideo()
+                } else if (state === "sync" && ytPlayer && ytPlayerReady && pendingSeek != null) {
+                    ytPlayer.seekTo(pendingSeek, true)
+                    pendingSeek = null
                 }
                 return
             }
@@ -530,6 +625,10 @@ async function renderSongTimeline() {
             } else if (state === "paused" || state === "ended") {
                 setPlaying(false, { fromYoutube: true })
             } else if (state === "sync" && ytPlayer && ytPlayerReady) {
+                if (pendingSeek != null) {
+                    ytPlayer.seekTo(pendingSeek, true)
+                    pendingSeek = null
+                }
                 if (isPlaying) ytPlayer.playVideo()
                 else ytPlayer.pauseVideo()
             }
@@ -547,6 +646,8 @@ async function renderSongTimeline() {
                 setPlaying(false)
                 return
             }
+            // Reproducción desde el inicio (no es un salto): sin seek pendiente.
+            pendingSeek = null
             // Durante el conteo, precargamos el iframe si aún no existe.
             if (!ytPlayerReady) controlYoutube(true)
             const go = await runCountdown()
@@ -560,6 +661,7 @@ async function renderSongTimeline() {
         const replayButton = document.getElementById("timeline-replay")
         const replaySong = async () => {
             stopCountdown()
+            pendingSeek = null
             // Si está sonando, detenemos timeline y video para que el conteo
             // respete silencio y la animación no avance durante el 3-2-1.
             stopTimeline()
@@ -576,6 +678,40 @@ async function renderSongTimeline() {
             setPlaying(true)
         }
         replayButton?.addEventListener("click", replaySong)
+
+        // Click en una tarjeta de sección: salta a esa sección de la línea de
+        // tiempo y reproduce la animación y el video desde ahí (con conteo).
+        const jumpToSection = async (instance) => {
+            if (instance.missing) return
+            const targetCell = cells.findIndex((c) => c.sectionIndex === instance.index)
+            if (targetCell < 0) return
+            stopCountdown()
+            stopTimeline()
+            countingDown = true
+            countdownToken += 1
+            activeIndex = targetCell
+            renderActive()
+            // Segundo del video donde empieza la sección:
+            // animationDelay + (beat × bpmTime). Seek ahí para sincronizar.
+            const seekSec = animationDelayMs / 1000 + (targetCell * bpmTime / 1000)
+            if (ytPlayer && ytPlayerReady) {
+                ytPlayer.pauseVideo()
+                ytPlayer.seekTo(seekSec, true)
+                pendingSeek = null
+            } else {
+                pendingSeek = seekSec
+                controlYoutube(true) // precarga el iframe durante el conteo
+            }
+            const go = await runCountdown()
+            if (!go) return
+            // Salto mid-canción: arranca sin volver a aplicar animationDelay.
+            setPlaying(true, { skipDelay: true })
+        }
+        sectionCards.forEach((card) => {
+            const instance = sectionInstances.find((i) => String(i.index) === card.dataset.section)
+            if (!instance) return
+            card.addEventListener("click", () => jumpToSection(instance))
+        })
 
         return
     }
