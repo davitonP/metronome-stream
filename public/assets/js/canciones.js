@@ -148,6 +148,9 @@ async function renderSongTimeline() {
 
     const bpm = songData.metadata?.bpm || 120
     const bpmTime = 60000 / bpm
+    // Retardo (en ms) entre el inicio del video y el de la animación:
+    // compensa que la canción en el video no suele empezar en el segundo 0.00.
+    const animationDelayMs = (Number(songData.metadata?.animationDelay) || 0) * 1000
     updateSongInfo(songData.metadata)
     // console.log("BPM:", bpm)
 
@@ -362,9 +365,111 @@ async function renderSongTimeline() {
         const statusDot = statusBadge?.querySelector("[data-status-dot]")
         const statusLabel = statusBadge?.querySelector("[data-status-label]")
         let isPlaying = false
+        let pendingPlay = false
+        let pendingPlayFallback = null
+        let countingDown = false
+        let countdownToken = 0
+
+        const countdownOverlay = document.getElementById("countdown-overlay")
+        const countdownNumber = countdownOverlay?.querySelector(".countdown-number")
+
+        const stopCountdown = () => {
+            countingDown = false
+            countdownToken += 1
+            if (countdownOverlay) {
+                countdownOverlay.classList.add("hidden")
+                countdownOverlay.classList.remove("flex")
+                countdownOverlay.dataset.active = "false"
+            }
+            if (countdownNumber) countdownNumber.textContent = ""
+        }
+
+        const showCountNumber = (value) => {
+            if (!countdownOverlay || !countdownNumber) return
+            countdownNumber.textContent = value
+            countdownOverlay.dataset.active = "false"
+            // Reinicia la animación de pop
+            void countdownNumber.offsetWidth
+            countdownOverlay.dataset.active = "true"
+        }
+
+        // Cuenta regresiva al ritmo del BPM. Devuelve una promesa que se
+        // resuelve al terminar (o se rechaza si se cancela con stopCountdown).
+        const runCountdown = () => {
+            const token = ++countdownToken
+            countingDown = true
+            if (countdownOverlay) {
+                countdownOverlay.classList.remove("hidden")
+                countdownOverlay.classList.add("flex")
+            }
+            return new Promise((resolve) => {
+                let n = 3
+                showCountNumber(n)
+                const tick = () => {
+                    if (token !== countdownToken || !countingDown) {
+                        stopCountdown()
+                        resolve(false)
+                        return
+                    }
+                    n -= 1
+                    if (n <= 0) {
+                        stopCountdown()
+                        resolve(true)
+                    } else {
+                        showCountNumber(n)
+                        setTimeout(tick, bpmTime)
+                    }
+                }
+                setTimeout(tick, bpmTime)
+            })
+        }
+
+        let timelineDelayTimeout = null
+        const startTimeline = () => {
+            window.clearInterval(window.timelineInterval)
+            window.timelineInterval = window.setInterval(advance, bpmTime)
+        }
+        const clearTimelineDelay = () => {
+            if (timelineDelayTimeout) {
+                clearTimeout(timelineDelayTimeout)
+                timelineDelayTimeout = null
+            }
+        }
+        // Arranca el timeline tras el animationDelay del JSON, para que la
+        // animación comience cuando realmente inicia la canción en el video.
+        const startTimelineAfterDelay = () => {
+            clearTimelineDelay()
+            if (animationDelayMs > 0) {
+                timelineDelayTimeout = setTimeout(() => {
+                    timelineDelayTimeout = null
+                    startTimeline()
+                }, animationDelayMs)
+            } else {
+                startTimeline()
+            }
+        }
+        const stopTimeline = () => {
+            window.clearInterval(window.timelineInterval)
+            clearTimelineDelay()
+        }
+        const clearPendingFallback = () => {
+            if (pendingPlayFallback) {
+                clearTimeout(pendingPlayFallback)
+                pendingPlayFallback = null
+            }
+        }
 
         const setPlaying = (playing, { fromYoutube = false } = {}) => {
-            if (fromYoutube && isPlaying === playing) return
+            // El video confirma reproducción: si estábamos esperando su carga,
+            // arrancamos el timeline ahora para no ir por delante del video.
+            if (fromYoutube && isPlaying === playing) {
+                if (playing && pendingPlay) {
+                    pendingPlay = false
+                    clearPendingFallback()
+                    startTimelineAfterDelay()
+                }
+                return
+            }
             isPlaying = playing
             if (playIcon) playIcon.classList.toggle("hidden", playing)
             if (pauseIcon) pauseIcon.classList.toggle("hidden", !playing)
@@ -383,16 +488,43 @@ async function renderSongTimeline() {
                 statusBadge.classList.toggle("text-slate-300", !playing)
             }
             if (playing) {
-                window.clearInterval(window.timelineInterval)
-                window.timelineInterval = window.setInterval(advance, bpmTime)
+                // Primera reproducción: el iframe aún no está listo. Esperamos a
+                // que el video confirme (PLAYING) para arrancar la animación y
+                // evitar que vaya por delante. Respaldo por si falla la carga.
+                if (!fromYoutube && !ytPlayerReady) {
+                    pendingPlay = true
+                    stopTimeline()
+                    clearPendingFallback()
+                    pendingPlayFallback = setTimeout(() => {
+                        if (pendingPlay) {
+                            pendingPlay = false
+                            startTimelineAfterDelay()
+                        }
+                    }, 4000)
+                } else {
+                    pendingPlay = false
+                    clearPendingFallback()
+                    startTimelineAfterDelay()
+                }
             } else {
-                window.clearInterval(window.timelineInterval)
+                pendingPlay = false
+                clearPendingFallback()
+                stopTimeline()
             }
             if (!fromYoutube) controlYoutube(playing)
         }
 
         // Sincroniza el botón de play con los cambios de estado del video de YouTube.
         ytStateHandler = (state) => {
+            // Durante el conteo regresivo, el video se precarga pero no debe
+            // sonar: si empieza a reproducir, lo pausamos e ignoramos el estado
+            // hasta que el conteo termine.
+            if (countingDown) {
+                if (state === "playing" && ytPlayer && ytPlayerReady) {
+                    ytPlayer.pauseVideo()
+                }
+                return
+            }
             if (state === "playing") {
                 setPlaying(true, { fromYoutube: true })
             } else if (state === "paused" || state === "ended") {
@@ -403,16 +535,44 @@ async function renderSongTimeline() {
             }
         }
 
-        playButton?.addEventListener("click", () => setPlaying(!isPlaying))
+        // Inicia la reproducción con conteo regresivo (3, 2, 1).
+        // Precarga el video durante el conteo para que arranque a la par.
+        const startWithCountdown = async () => {
+            if (countingDown) {
+                stopCountdown()
+                return
+            }
+            // Si ya está sonando, el click pausa sin conteo.
+            if (isPlaying) {
+                setPlaying(false)
+                return
+            }
+            // Durante el conteo, precargamos el iframe si aún no existe.
+            if (!ytPlayerReady) controlYoutube(true)
+            const go = await runCountdown()
+            if (!go) return
+            setPlaying(true)
+        }
+
+        playButton?.addEventListener("click", startWithCountdown)
 
         // Botón "volver al inicio": reinicia el timeline y el video desde cero.
         const replayButton = document.getElementById("timeline-replay")
-        const replaySong = () => {
-            activeIndex = 0
-            renderActive()
+        const replaySong = async () => {
+            stopCountdown()
+            // Si está sonando, detenemos timeline y video para que el conteo
+            // respete silencio y la animación no avance durante el 3-2-1.
+            stopTimeline()
+            countingDown = true
+            countdownToken += 1
             if (ytPlayer && ytPlayerReady) {
+                ytPlayer.pauseVideo()
                 ytPlayer.seekTo(0, true)
             }
+            activeIndex = 0
+            renderActive()
+            const go = await runCountdown()
+            if (!go) return
             setPlaying(true)
         }
         replayButton?.addEventListener("click", replaySong)

@@ -5,7 +5,8 @@
         "bpm": 72,
         "timeSignature": "4/4",
         "key": "C",
-        "videoid-youtube": "drFvhcWYS3U"
+        "videoid-youtube": "drFvhcWYS3U",
+        "animationDelay": 0.6
     },
     "sections": [
         {
@@ -28,7 +29,7 @@
             ]
         },
         {
-            "name": "Verso",
+            "name": "Verso1",
             "startVideo": 1.5,
             "startMeasure": 1,
             "items": [
@@ -110,6 +111,67 @@
                     "chord": "G",
                     "text": "Dios",
                     "duration": 4
+                },
+                {
+                    "measure": 9,
+                    "chord": "C",
+                    "text": "Cuán grande es Dios",
+                    "duration": 8
+                }
+            ]
+        },
+        {
+            "name": "Verso2",
+            "startVideo": 1.5,
+            "startMeasure": 1,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "C",
+                    "text": "El esplendor de un rey",
+                    "duration": 8
+                },
+                {
+                    "measure": 2,
+                    "chord": "Am",
+                    "text": "Vestido en majestad, a tierra alegre está",
+                    "duration": 8
+                },
+                {
+                    "measure": 3,
+                    "chord": "F",
+                    "text": "La tierra alegre está",
+                    "duration": 4
+                },
+                {
+                    "measure": 4,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 5,
+                    "chord": "C",
+                    "text": "Cubierto está de luz",
+                    "duration": 8
+                },
+                {
+                    "measure": 6,
+                    "chord": "Am",
+                    "text": "Venció la oscuridad, Y tiembla a su voz",
+                    "duration": 8
+                },
+                {
+                    "measure": 7,
+                    "chord": "F",
+                    "text": "Y tiembla a su voz",
+                    "duration": 4
+                },
+                {
+                    "measure": 8,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
                 }
             ]
         }
@@ -118,7 +180,9 @@
         "intro",
         "verso1",
         "coro",
-        "verso2",
-        "puente"
+        "verso1",
+        "coro",
+        "coro",
+        "verso2"
     ]
 }

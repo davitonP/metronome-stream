@@ -22,6 +22,14 @@
             border-color: rgba(34, 211, 238, 0.4);
             color: #f8fafc;
         }
+        @keyframes count-pop {
+            0%   { transform: scale(0.4); opacity: 0; }
+            30%  { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        #countdown-overlay[data-active="true"] .countdown-number {
+            animation: count-pop 0.35s ease-out both;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 font-sans">
@@ -32,6 +40,10 @@
     </div>
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-950/70 z-40 hidden lg:hidden"></div>
+
+    <div id="countdown-overlay" data-active="false" class="pointer-events-none fixed inset-0 z-50 hidden items-center justify-center">
+        <span class="countdown-number text-[12rem] font-black leading-none text-cyan-300 drop-shadow-[0_0_40px_rgba(34,211,238,0.7)]"></span>
+    </div>
 
     <div class="flex min-h-screen flex-col">
         <div class="flex flex-1 items-stretch px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
