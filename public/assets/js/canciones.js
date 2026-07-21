@@ -1,4 +1,6 @@
-const SONG_DATA_URL = "/assets/letras/cuan_grande_es_dios.json"
+// const SONG_DATA_URL = "/assets/letras/cuan_grande_es_dios.json"
+const SONG_DATA_URL = "/assets/letras/dios_incomparable.json"
+// const SONG_DATA_URL = "/assets/letras/el_gran_yo_soy.json"
 let timelineScrollMode = "izquierda"
 
 // ---- Reproducción de YouTube (puente con lite-youtube) ----
@@ -9,6 +11,7 @@ let ytPlayerReady = false
 let ytApiReady = false
 // Asignado por renderSongTimeline para sincronizar el botón de play con el video.
 let ytStateHandler = null
+
 
 function tryBuildYtPlayer() {
     if (ytPlayer || !ytApiReady || !ytLite) return
@@ -152,6 +155,17 @@ async function renderSongTimeline() {
     // compensa que la canción en el video no suele empezar en el segundo 0.00.
     const animationDelayMs = (Number(songData.metadata?.animationDelay) || 0) * 1000
     updateSongInfo(songData.metadata)
+
+    // Asegura que el video de YouTube coincida con el de la canción cargada.
+    // lite-youtube observa el atributo `videoid`, así que al cambiarlo refresca
+    // el poster y reinicia el iframe. Descartamos el player anterior para que
+    // el puente se reconstruya sobre el nuevo iframe cuando esté listo.
+    const newVideoId = songData.metadata?.["videoid-youtube"]
+    if (ytLite && newVideoId && ytLite.getAttribute("videoid") !== newVideoId) {
+        ytPlayer = null
+        ytPlayerReady = false
+        ytLite.setAttribute("videoid", newVideoId)
+    }
     // console.log("BPM:", bpm)
 
     if (Array.isArray(songData.sections) && songData.sections.length > 0) {
@@ -198,6 +212,10 @@ async function renderSongTimeline() {
             items.forEach((item) => {
                 const beats = Math.max(1, Math.floor(Number(item.duration) || 1))
                 const startsMeasure = item.measure !== prevMeasure && (!item.beat || item.beat === 1)
+                // Beat (dentro del acorde) donde empieza la sílaba alineada.
+                // Por defecto 0 (en el cambio de acorde). Se usa cuando la letra
+                // cae a mitad del acorde, no en su inicio.
+                const lyricOffset = Math.min(Math.max(0, Math.floor(Number(item.lyricOffset) || 0)), beats - 1)
 
                 lyrics.push({
                     itemIndex,
@@ -214,13 +232,15 @@ async function renderSongTimeline() {
                         chord: beat === 0 ? (item.chord || "") : "",
                         measureStart: beat === 0 && startsMeasure
                     })
-                    // Celda de letra por beat: el texto va en el primer beat
-                    // del ítem y se desborda sobre los siguientes visualmente.
+                    // Celda de letra por beat: el texto se ancla al beat
+                    // `lyricOffset` del ítem (0 = inicio del acorde) y se
+                    // desborda a izquierda/derecha desde ahí.
+                    const beatHasLyric = beat === lyricOffset
                     lyricCells.push({
                         itemIndex,
-                        beatFirst: beat === 0,
-                        chord: beat === 0 ? (item.chord || "") : "",
-                        text: beat === 0 ? (item.text || "") : ""
+                        beatHasLyric,
+                        chord: beatHasLyric ? (item.chord || "") : "",
+                        text: beatHasLyric ? (item.text || "") : ""
                     })
                 }
 
@@ -279,18 +299,18 @@ async function renderSongTimeline() {
             cellEl.dataset.item = lc.itemIndex
             cellEl.className = [
                 "relative min-h-[64px] min-w-[68px] flex-1 border-r border-slate-800/60 px-3 py-2",
-                lc.beatFirst ? "border-l-2 border-l-slate-600/60" : "",
+                lc.beatHasLyric ? "border-l-2 border-l-slate-600/60" : "",
                 "transition-colors duration-200"
             ].join(" ")
 
-            if (lc.beatFirst) {
+            if (lc.beatHasLyric) {
                 // Se vuelve a colocar el acorde
-                if (lc.chord) {
-                    const chordTag = document.createElement("p")
-                    chordTag.className = "text-[0.65rem] font-semibold uppercase tracking-wide text-cyan-300/80"
-                    chordTag.textContent = toSolfege(lc.chord)
-                    cellEl.appendChild(chordTag)
-                }
+                // if (lc.chord) {
+                //     const chordTag = document.createElement("p")
+                //     chordTag.className = "text-[0.65rem] font-semibold uppercase tracking-wide text-cyan-300/80"
+                //     chordTag.textContent = toSolfege(lc.chord)
+                //     cellEl.appendChild(chordTag)
+                // }
                 // La sílaba alineada con el acorde se marca con %sílaba%.
                 // Ej: "El %es%plendor de un rey" -> before="El ", sílaba="es",
                 // after="plendor de un rey". La sílaba queda al inicio de la
@@ -435,12 +455,40 @@ async function renderSongTimeline() {
             }
         }
 
-        const advance = () => {
-            activeIndex = (activeIndex + 1) % gridCells.length
+        // Al terminar la última celda: detiene animación y video, y deja la
+        // grilla en posición de inicio (sin loop).
+        const finishPlayback = () => {
+            stopTimeline()
+            clearPendingFallback()
+            isPlaying = false
+            pendingPlay = false
+            if (playIcon) playIcon.classList.toggle("hidden", false)
+            if (pauseIcon) pauseIcon.classList.toggle("hidden", true)
+            if (playButton) playButton.setAttribute("aria-label", "Reproducir")
+            if (statusLabel) statusLabel.textContent = "Finalizado"
+            if (statusDot) {
+                statusDot.classList.toggle("bg-cyan-300", false)
+                statusDot.classList.toggle("bg-slate-400", true)
+            }
+            if (statusBadge) {
+                statusBadge.classList.toggle("border-cyan-400/20", false)
+                statusBadge.classList.toggle("bg-cyan-500/10", false)
+                statusBadge.classList.toggle("text-cyan-300", false)
+                statusBadge.classList.toggle("border-slate-400/20", true)
+                statusBadge.classList.toggle("bg-slate-500/10", true)
+                statusBadge.classList.toggle("text-slate-300", true)
+            }
+            if (ytPlayer && ytPlayerReady) {
+                ytPlayer.pauseVideo()
+                ytPlayer.seekTo(0, true)
+            }
+            activeIndex = 0
             renderActive()
+            // Lleva la grilla al inicio sin animación.
+            if (scroller) scroller.scrollTo({ left: 0, behavior: "smooth" })
         }
 
-        window.clearInterval(window.timelineInterval)
+        cancelAnimationFrame(window.timelineRAF)
         renderActive()
 
         // Play / pause control
@@ -512,34 +560,55 @@ async function renderSongTimeline() {
             })
         }
 
-        let timelineDelayTimeout = null
+        let fallbackClockStart = null
         const startTimeline = () => {
-            window.clearInterval(window.timelineInterval)
-            window.timelineInterval = window.setInterval(advance, bpmTime)
-        }
-        const clearTimelineDelay = () => {
-            if (timelineDelayTimeout) {
-                clearTimeout(timelineDelayTimeout)
-                timelineDelayTimeout = null
+            cancelAnimationFrame(window.timelineRAF)
+            fallbackClockStart = null
+            // El beat se recalcula en cada frame desde el tiempo real del
+            // video (ytPlayer.getCurrentTime). Así se elimina el drift del
+            // setInterval: si el video bufferiza o el tempo varía, la
+            // animación lo sigue en lugar de ir por delante o por detrás.
+            // animationDelayMs se respeta aquí: mientras el video no llega a
+            // ese segundo, elapsed es negativo y la animación se queda en la
+            // celda 0 (igual que antes, pero sin setTimeout aparte).
+            const tick = () => {
+                if (!isPlaying) return
+                let t = null
+                if (ytPlayer && ytPlayerReady) {
+                    const ct = ytPlayer.getCurrentTime()
+                    if (typeof ct === 'number' && isFinite(ct)) t = ct
+                }
+                if (t == null) {
+                    // Respaldo si el iframe de YouTube aún no está listo:
+                    // estima el tiempo con performance.now() para no quedarse
+                    // congelado. Cuando el video confirma PLAYING, el timeline
+                    // se reinicia anclado a getCurrentTime().
+                    if (fallbackClockStart == null) fallbackClockStart = performance.now()
+                    t = (performance.now() - fallbackClockStart) / 1000
+                }
+                const elapsed = (t - animationDelayMs / 1000) * bpm / 60
+                const next = Math.floor(elapsed)
+                if (next >= gridCells.length) {
+                    finishPlayback()
+                    return
+                }
+                const clamped = Math.max(0, next)
+                if (clamped !== activeIndex) {
+                    activeIndex = clamped
+                    renderActive()
+                }
+                window.timelineRAF = requestAnimationFrame(tick)
             }
+            window.timelineRAF = requestAnimationFrame(tick)
         }
-        // Arranca el timeline tras el animationDelay del JSON, para que la
-        // animación comience cuando realmente inicia la canción en el video.
-        // skipDelay = true omite el retardo (usado al saltar a una sección).
-        const startTimelineAfterDelay = ({ skipDelay = false } = {}) => {
-            clearTimelineDelay()
-            if (!skipDelay && animationDelayMs > 0) {
-                timelineDelayTimeout = setTimeout(() => {
-                    timelineDelayTimeout = null
-                    startTimeline()
-                }, animationDelayMs)
-            } else {
-                startTimeline()
-            }
-        }
+        // El animationDelay del JSON ya se respeta dentro de startTimeline
+        // (elapsed = (t - animationDelay) * bpm / 60), así que no hace falta
+        // un setTimeout previo. Mantenemos el nombre por compatibilidad con
+        // los puntos que ya llaman a startTimelineAfterDelay().
+        const startTimelineAfterDelay = () => startTimeline()
         const stopTimeline = () => {
-            window.clearInterval(window.timelineInterval)
-            clearTimelineDelay()
+            cancelAnimationFrame(window.timelineRAF)
+            window.timelineRAF = null
         }
         const clearPendingFallback = () => {
             if (pendingPlayFallback) {
@@ -622,8 +691,11 @@ async function renderSongTimeline() {
             }
             if (state === "playing") {
                 setPlaying(true, { fromYoutube: true })
-            } else if (state === "paused" || state === "ended") {
+            } else if (state === "paused") {
                 setPlaying(false, { fromYoutube: true })
+            } else if (state === "ended") {
+                // El video terminó: detiene todo y deja la grilla al inicio.
+                finishPlayback()
             } else if (state === "sync" && ytPlayer && ytPlayerReady) {
                 if (pendingSeek != null) {
                     ytPlayer.seekTo(pendingSeek, true)

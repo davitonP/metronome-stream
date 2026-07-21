@@ -1,0 +1,321 @@
+{
+    "metadata": {
+        "title": "Dios incomparable",
+        "artist": "Generación 12",
+        "bpm": 78,
+        "timeSignature": "4/4",
+        "key": "B",
+        "videoid-youtube": "WmcSy89s9Ww",
+        "animationDelay": 0.2
+    },
+    "sections": [
+        {
+            "name": "Intro",
+            "startVideo": 0,
+            "startMeasure": 1,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "B",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "F#/A#",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "G#m",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 4,
+                    "chord": "E",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 5,
+                    "chord": "B",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 6,
+                    "chord": "F#/A#",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 7,
+                    "chord": "G#m",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 8,
+                    "chord": "E",
+                    "text": "",
+                    "duration": 4
+                }
+            ]
+        },
+        {
+            "name": "Verso1",
+            "items": [
+                {
+                    "measure": 9,
+                    "chord": "B",
+                    "text": "Dios de mi",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 10,
+                    "chord": "F#/A#",
+                    "text": "co%ra%zón",
+                    "duration": 4
+                },
+                {
+                    "measure": 11,
+                    "chord": "G#m",
+                    "text": "en ti encontré",
+                    "duration": 4
+                },
+                {
+                    "measure": 12,
+                    "chord": "E",
+                    "text": "mi %sa%lvación",
+                    "duration": 4
+                },
+                {
+                    "measure": 13,
+                    "chord": "B",
+                    "text": "Tu %glo%ria y ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 14,
+                    "chord": "F#/A#",
+                    "text": "ma%jes%tad",
+                    "duration": 4
+                },
+                {
+                    "measure": 15,
+                    "chord": "G#m",
+                    "text": "quiero %si%empre",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 16,
+                    "chord": "E",
+                    "text": "con%tem%plar",
+                    "duration": 4
+                },
+                {
+                    "measure": 17,
+                    "chord": "B",
+                    "text": "Tu %eres% mi ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 18,
+                    "chord": "F#/A#",
+                    "text": "a%dora%ción",
+                    "duration": 4
+                },
+                {
+                    "measure": 19,
+                    "chord": "G#m",
+                    "text": "y mi %ete%rna ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 20,
+                    "chord": "E",
+                    "text": "canción",
+                    "duration": 4
+                },
+                {
+                    "measure": 21,
+                    "chord": "B",
+                    "text": "To%do% mi ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 22,
+                    "chord": "F#/A#",
+                    "text": "in%te%rior",
+                    "duration": 4
+                },
+                {
+                    "measure": 23,
+                    "chord": "G#m",
+                    "text": "es cau%ti%vado ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 24,
+                    "chord": "E",
+                    "text": "por tu a----%mor%",
+                    "duration": 4,
+                    "lyricOffset": 1
+                },
+                {
+                    "measure": 25,
+                    "chord": "E",
+                    "text": "",
+                    "duration": 4
+                }
+            ]
+        },
+        {
+            "name": "Coro",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "B",
+                    "text": "Eres Dios",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 2,
+                    "chord": "F#/A#",
+                    "text": "eter%no%",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G#m",
+                    "text": "solo tu eres bue%no%",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "E",
+                    "text": "Dios incompara%ble% eres tú",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "B",
+                    "text": "Nunca me separaré ",
+                    "duration": 4,
+                    "lyricOffset": 1
+                },
+                {
+                    "measure": 2,
+                    "chord": "F#/A#",
+                    "text": "de tu gran amor",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G#m",
+                    "text": "Eres mi Señor ",
+                    "duration": 4,
+                    "lyricOffset": 1
+                },
+                {
+                    "measure": 2,
+                    "chord": "E",
+                    "text": "mi salvador",
+                    "duration": 4
+                }
+            ]
+        },
+        {
+            "name": "tiempo",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "B",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "F#/A#",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G#m",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "E",
+                    "text": "",
+                    "duration": 4
+                }
+            ]
+        },
+        
+        {
+            "name": "puente",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 9,
+                    "chord": "C",
+                    "text": "Tu nombre %sobre% todo es",
+                    "duration": 8
+                },
+                {
+                    "measure": 10,
+                    "chord": "Am",
+                    "text": "eres %digno% de alabar",
+                    "duration": 8
+                },
+                {
+                    "measure": 11,
+                    "chord": "F",
+                    "text": "Y mi %ser% dirá",
+                    "duration": 4
+                },
+                {
+                    "measure": 12,
+                    "chord": "G",
+                    "text": "Cuan %grande% es ",
+                    "duration": 4
+                },
+                {
+                    "measure": 13,
+                    "chord": "C",
+                    "text": "Dios",
+                    "duration": 8
+                }
+            ]
+        }
+    ],
+    "structure": [
+        "intro",
+        "verso1",
+        "coro",
+        "tiempo",
+        "verso1",
+        "coro",
+        "coro",
+        "tiempo",
+        "tiempo"
+    ]
+}

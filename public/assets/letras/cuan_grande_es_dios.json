@@ -60,25 +60,25 @@
                 {
                     "measure": 5,
                     "chord": "C",
-                    "text": "Cubierto está de luz",
+                    "text": "Cu%bie%rto está de luz",
                     "duration": 8
                 },
                 {
                     "measure": 6,
                     "chord": "Am",
-                    "text": "Venció la oscuridad, Y tiembla a su voz",
+                    "text": "Ven%ció% la oscuridad",
                     "duration": 8
                 },
                 {
                     "measure": 7,
                     "chord": "F",
-                    "text": "Y tiembla a su voz",
+                    "text": "Y tiembla a su %voz%",
                     "duration": 4
                 },
                 {
                     "measure": 8,
                     "chord": "G",
-                    "text": "",
+                    "text": "Y tiembla a su %voz%",
                     "duration": 4
                 }
             ]
@@ -91,31 +91,31 @@
                 {
                     "measure": 9,
                     "chord": "C",
-                    "text": "Cuán grande es Dios",
+                    "text": "Cuán %gran%de es Dios",
                     "duration": 8
                 },
                 {
                     "measure": 10,
                     "chord": "Am",
-                    "text": "Cántale cuán grande es Dios",
+                    "text": "Cántale cuán %gra%nde es Dios",
                     "duration": 8
                 },
                 {
                     "measure": 11,
                     "chord": "F",
-                    "text": "Y todos lo verán, cuán grande es",
+                    "text": "Y todos lo ve%rán%",
                     "duration": 4
                 },
                 {
                     "measure": 12,
                     "chord": "G",
-                    "text": "Dios",
+                    "text": "Cuán %gra%nde es",
                     "duration": 4
                 },
                 {
                     "measure": 9,
                     "chord": "C",
-                    "text": "Cuán grande es Dios",
+                    "text": " Dios",
                     "duration": 8
                 }
             ]
@@ -134,43 +134,43 @@
                 {
                     "measure": 2,
                     "chord": "Am",
-                    "text": "Y el tiempo está en Él, Principio y el",
+                    "text": "Y el %tiem%po está en Él",
                     "duration": 8
                 },
                 {
                     "measure": 3,
                     "chord": "F",
-                    "text": "fin, Principio y el",
+                    "text": "Principio y el %fin%",
                     "duration": 4
                 },
                 {
                     "measure": 4,
                     "chord": "G",
-                    "text": "fin",
+                    "text": "Principio y el %fin%",
                     "duration": 4
                 },
                 {
                     "measure": 5,
                     "chord": "C",
-                    "text": "La trinidad en Dios",
+                    "text": "La %tri%nidad en Dios",
                     "duration": 8
                 },
                 {
                     "measure": 6,
                     "chord": "Am",
-                    "text": "El padre, hijo, espíritu, Cordero y el",
+                    "text": "El %padre%, hijo, espíritu",
                     "duration": 8
                 },
                 {
                     "measure": 7,
                     "chord": "F",
-                    "text": "león, Cordero y el",
+                    "text": "Cordero y el %león%",
                     "duration": 4
                 },
                 {
                     "measure": 8,
                     "chord": "G",
-                    "text": "león",
+                    "text": "Cordero y el %león%",
                     "duration": 4
                 }
             ]
@@ -183,31 +183,31 @@
                 {
                     "measure": 9,
                     "chord": "C",
-                    "text": "Y Tu Nombre sobre todo es",
+                    "text": "Tu nombre %sobre% todo es",
                     "duration": 8
                 },
                 {
                     "measure": 10,
                     "chord": "Am",
-                    "text": "Tu eres Digno de alabar",
+                    "text": "eres %digno% de alabar",
                     "duration": 8
                 },
                 {
                     "measure": 11,
                     "chord": "F",
-                    "text": "Y mi ser dirá",
+                    "text": "Y mi %ser% dirá",
                     "duration": 4
                 },
                 {
                     "measure": 12,
                     "chord": "G",
-                    "text": "Cuan grande es Dios",
+                    "text": "Cuan %grande% es ",
                     "duration": 4
                 },
                 {
                     "measure": 13,
                     "chord": "C",
-                    "text": "",
+                    "text": "Dios",
                     "duration": 8
                 }
             ]

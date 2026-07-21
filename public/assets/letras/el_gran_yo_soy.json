@@ -1,0 +1,557 @@
+{
+    "metadata": {
+        "title": "El gran yo soy",
+        "artist": "En espíritu y en verdad",
+        "bpm": 80,
+        "timeSignature": "4/4",
+        "key": "D",
+        "videoid-youtube": "bd-ectv28RE",
+        "animationDelay": 4.7
+    },
+    "sections": [
+        {
+            "name": "Intro",
+            "startVideo": 0,
+            "startMeasure": 1,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "D",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 4,
+                    "chord": "D",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 5,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 6,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                }
+            ]
+        },
+        {
+            "name": "Verso1",
+            "startVideo": 1.5,
+            "startMeasure": 1,
+            "items": [
+               {
+                    "measure": 7,
+                    "chord": "D",
+                    "text": "Me quiero acercar ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 8,
+                    "chord": "G",
+                    "text": " ",
+                    "duration": 2
+                },
+                {
+                    "measure": 9,
+                    "chord": "A",
+                    "text": "a tu %la%do estar",
+                    "duration": 2
+                },
+                {
+                    "measure": 10,
+                    "chord": "D",
+                    "text": "Que el cielo sea real ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 11,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 12,
+                    "chord": "A",
+                    "text": "y %la% muerte negar",
+                    "duration": 2
+                },
+
+                {
+                    "measure": 13,
+                    "chord": "Bm",
+                    "text": "Quiero oír las voces ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 14,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 15,
+                    "chord": "A",
+                    "text": "de %án%geles hoy",
+                    "duration": 2
+                },
+                {
+                    "measure": 16,
+                    "chord": "D",
+                    "text": "Cantando unidos",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 17,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 18,
+                    "chord": "A",
+                    "text": "Alelu-----",
+                    "duration": 2
+                }
+            ]
+        },
+        {
+            "name": "Coro",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 3,
+                    "chord": "Bm",
+                    "text": "----%ya%...",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G",
+                    "text": "Santo .. San%to%,",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "D",
+                    "text": "Pode%ro%so",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "Gran Yo %Soy%",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "Bm",
+                    "text": "Al que es dig%no%, ",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G",
+                    "text": "incompa%ra%ble,",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "D",
+                    "text": "Podero%so%",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "Gran Yo %Soy%",
+                    "duration": 2
+                }
+            ]
+        },
+        {
+            "name": "Verso2",
+            "startVideo": 1.5,
+            "startMeasure": 1,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 12,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 4
+                },
+               {
+                    "measure": 2,
+                    "chord": "D",
+                    "text": "Me quiero acercar ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 3,
+                    "chord": "G",
+                    "text": " ",
+                    "duration": 2
+                },
+                {
+                    "measure": 4,
+                    "chord": "A",
+                    "text": "a tu %la%do estar",
+                    "duration": 2
+                },
+                {
+                    "measure": 5,
+                    "chord": "D",
+                    "text": "Al mundo amar ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 6,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 7,
+                    "chord": "A",
+                    "text": "y lo oscuro odiar",
+                    "duration": 2
+                },
+
+                {
+                    "measure": 8,
+                    "chord": "Bm",
+                    "text": "El valle de huesos ",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 9,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 10,
+                    "chord": "A",
+                    "text": "ver revivir",
+                    "duration": 2
+                },
+                {
+                    "measure": 11,
+                    "chord": "D",
+                    "text": "Cantando unidos",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 12,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 13,
+                    "chord": "A",
+                    "text": "Alelu-----",
+                    "duration": 2
+                }
+            ]
+        },
+        {
+            "name": "espacio",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 2,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 4,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 5,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 6,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 7,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 8,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 9,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 10,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 11,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                }
+            ]
+        },
+        {
+            "name": "espacio letra",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 1,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 2,
+                    "chord": "G",
+                    "text": "El %gran% yo soy",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 4,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 5,
+                    "chord": "G",
+                    "text": "El %gran% yo soy",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 6,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 7,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 8,
+                    "chord": "G",
+                    "text": "El %gran% yo soy",
+                    "duration": 4,
+                    "lyricOffset": 2
+                },
+                {
+                    "measure": 9,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 10,
+                    "chord": "Bm",
+                    "text": "",
+                    "duration": 2
+                },
+                {
+                    "measure": 11,
+                    "chord": "G",
+                    "text": "",
+                    "duration": 4
+                }
+            ]
+        },
+        {
+            "name": "puente",
+            "startVideo": 0,
+            "startMeasure": 9,
+            "items": [
+                {
+                    "measure": 3,
+                    "chord": "Bm",
+                    "text": "Tiembla ante Ti la tierra,",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "Bm",
+                    "text": "demonios huyen ya",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G",
+                    "text": "Al mencionar tu nombre,",
+                    "duration": 4
+                },{
+                    "measure": 1,
+                    "chord": "G",
+                    "text": "Rey de Majestad",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "D",
+                    "text": "No hay poder infernal",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "D",
+                    "text": "que pueda resistir",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "Ante el poder y",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "la presencia del",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "Bm",
+                    "text": "Gran Yo So%y%",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G",
+                    "text": "Gran Yo So%y%",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "D",
+                    "text": "Gran Yo So%y%",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "Bm",
+                    "text": "Gran Yo So%y%",
+                    "duration": 4
+                },
+                {
+                    "measure": 1,
+                    "chord": "G",
+                    "text": "Gran Yo So%y%",
+                    "duration": 4
+                },
+                {
+                    "measure": 2,
+                    "chord": "D",
+                    "text": "Gran Yo So%y%",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "A",
+                    "text": "Alelu-----",
+                    "duration": 4,
+                    "lyricOffset": 2
+                }
+            ]
+        }
+    ],
+    "structure": [
+        "intro",
+        "verso1",
+        "coro",
+        "verso2",
+        "coro",
+        "espacio",
+        "puente",
+        "coro",
+        "espacio letra",
+        "puente",
+        "coro",
+        "espacio letra"
+    ]
+}
