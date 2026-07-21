@@ -194,7 +194,7 @@
                 {
                     "measure": 2,
                     "chord": "F#/A#",
-                    "text": "eter%no%",
+                    "text": "%eter%no",
                     "duration": 4
                 },
                 {
@@ -206,33 +206,31 @@
                 {
                     "measure": 2,
                     "chord": "E",
-                    "text": "Dios incompara%ble% eres tú",
+                    "text": "Dios incompa%ra%ble ",
                     "duration": 4
                 },
                 {
                     "measure": 1,
                     "chord": "B",
-                    "text": "Nunca me separaré ",
-                    "duration": 4,
-                    "lyricOffset": 1
+                    "text": "eres %tú% ",
+                    "duration": 4
                 },
                 {
                     "measure": 2,
                     "chord": "F#/A#",
-                    "text": "de tu gran amor",
+                    "text": "Nunca me separa%ré% ",
                     "duration": 4
                 },
                 {
                     "measure": 1,
                     "chord": "G#m",
-                    "text": "Eres mi Señor ",
-                    "duration": 4,
-                    "lyricOffset": 1
+                    "text": "de tu gran a%mor%  ",
+                    "duration": 4
                 },
                 {
                     "measure": 2,
                     "chord": "E",
-                    "text": "mi salvador",
+                    "text": "Eres mi Se%ñor% mi salvador",
                     "duration": 4
                 }
             ]
@@ -275,34 +273,56 @@
             "startMeasure": 9,
             "items": [
                 {
-                    "measure": 9,
-                    "chord": "C",
-                    "text": "Tu nombre %sobre% todo es",
-                    "duration": 8
+                    "measure": 1,
+                    "chord": "B",
+                    "text": "A--------le--------lu-----",
+                    "duration": 4,
+                    "lyricOffset": 1
                 },
                 {
-                    "measure": 10,
-                    "chord": "Am",
-                    "text": "eres %digno% de alabar",
-                    "duration": 8
-                },
-                {
-                    "measure": 11,
-                    "chord": "F",
-                    "text": "Y mi %ser% dirá",
+                    "measure": 2,
+                    "chord": "F#/A#",
+                    "text": "ya",
                     "duration": 4
                 },
                 {
-                    "measure": 12,
-                    "chord": "G",
-                    "text": "Cuan %grande% es ",
+                    "measure": 3,
+                    "chord": "G#m",
+                    "text": "A--------le--------lu-----",
+                    "duration": 4,
+                    "lyricOffset": 1
+                },
+                {
+                    "measure": 4,
+                    "chord": "E",
+                    "text": "ya",
                     "duration": 4
                 },
                 {
-                    "measure": 13,
-                    "chord": "C",
-                    "text": "Dios",
-                    "duration": 8
+                    "measure": 1,
+                    "chord": "B",
+                    "text": "A--------le--------lu-----",
+                    "duration": 4,
+                    "lyricOffset": 1
+                },
+                {
+                    "measure": 2,
+                    "chord": "F#/A#",
+                    "text": "ya",
+                    "duration": 4
+                },
+                {
+                    "measure": 3,
+                    "chord": "G#m",
+                    "text": "A--------le--------lu-----",
+                    "duration": 4,
+                    "lyricOffset": 1
+                },
+                {
+                    "measure": 4,
+                    "chord": "E",
+                    "text": "ya",
+                    "duration": 4
                 }
             ]
         }
@@ -316,6 +336,13 @@
         "coro",
         "coro",
         "tiempo",
-        "tiempo"
+        "tiempo",
+        "puente",
+        "puente",
+        "puente",
+        "puente",
+        "coro",
+        "puente",
+        "puente"
     ]
 }

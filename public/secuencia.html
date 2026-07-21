@@ -30,6 +30,37 @@
         #countdown-overlay[data-active="true"] .countdown-number {
             animation: count-pop 0.35s ease-out both;
         }
+        .control-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            background: rgba(15, 23, 42, 0.9);
+            padding: 0.55rem 0.8rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        .control-chip:hover {
+            border-color: rgba(34, 211, 238, 0.35);
+            background: rgba(30, 41, 59, 0.95);
+            color: #f8fafc;
+        }
+        .control-chip[data-active="true"] {
+            border-color: rgba(34, 211, 238, 0.45);
+            background: rgba(8, 145, 178, 0.2);
+            color: #f8fafc;
+            box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.18);
+        }
+        .chip-dot {
+            height: 0.6rem;
+            width: 0.6rem;
+            border-radius: 9999px;
+            background: currentColor;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 font-sans">
@@ -105,20 +136,48 @@
 
                             <div class="mt-6 grid gap-4 ">
                                 <div id="controls" class="rounded-2xl border border-slate-800/80 bg-slate-900/80 p-4">
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            <button id="timeline-replay" type="button" aria-label="Volver al inicio" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-600/60 bg-slate-800 text-slate-100 transition hover:bg-slate-700">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-                                                    <path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path>
-                                                    <path d="M3 3v5h5"></path>
-                                                </svg>
-                                            </button>
-                                            <button id="timeline-play" type="button" aria-label="Reproducir" class="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-cyan-300/40 bg-cyan-500 text-slate-950 shadow-[0_0_28px_-4px_rgba(34,211,238,0.8)] transition hover:bg-cyan-400">
-                                                <svg data-play-icon viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>
-                                                <svg data-pause-icon viewBox="0 0 24 24" fill="currentColor" class="hidden h-8 w-8"><path d="M9 4a1 1 0 0 1 1 1v14a1 1 0 0 1-2 0V5a1 1 0 0 1 1-1Zm6 0a1 1 0 0 1 1 1v14a1 1 0 0 1-2 0V5a1 1 0 0 1 1-1Z"/></svg>
-                                            </button>
-                                            <div id="timeline-sections" class="flex flex-wrap items-center gap-2"></div>
-                                        </div>
+                                    <div class="flex flex-wrap items-center gap-2 pb-4">
+                                        <button id="timeline-replay" type="button" aria-label="Volver al inicio" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-600/60 bg-slate-800 text-slate-100 transition hover:bg-slate-700">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                                <path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path>
+                                                <path d="M3 3v5h5"></path>
+                                            </svg>
+                                        </button>
+                                        <button id="timeline-play" type="button" aria-label="Reproducir" class="inline-flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-cyan-300/40 bg-cyan-500 text-slate-950 shadow-[0_0_28px_-4px_rgba(34,211,238,0.8)] transition hover:bg-cyan-400">
+                                            <svg data-play-icon viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>
+                                            <svg data-pause-icon viewBox="0 0 24 24" fill="currentColor" class="hidden h-8 w-8"><path d="M9 4a1 1 0 0 1 1 1v14a1 1 0 0 1-2 0V5a1 1 0 0 1 1-1Zm6 0a1 1 0 0 1 1 1v14a1 1 0 0 1-2 0V5a1 1 0 0 1 1-1Z"/></svg>
+                                        </button>
+                                        <button type="button" class="control-chip" data-toggle="metronome" data-active="false" aria-pressed="false">
+                                            <span class="chip-dot"></span>
+                                            <span>Metronomo</span>
+                                        </button>
+                                        <button type="button" class="control-chip" data-toggle="video" data-active="true" aria-pressed="true">
+                                            <span class="chip-dot"></span>
+                                            <span>Video</span>
+                                        </button>
+                                        <button type="button" class="control-chip" data-toggle="video-volume" data-active="true" aria-pressed="true">
+                                            <span class="chip-dot"></span>
+                                            <span>Vol video</span>
+                                        </button>
+                                        <button type="button" class="control-chip" data-toggle="lyrics" data-active="false" aria-pressed="false">
+                                            <span class="chip-dot"></span>
+                                            <span>Letra</span>
+                                        </button>
+                                        <button type="button" class="control-chip" data-toggle="loop" data-active="false" aria-pressed="false">
+                                            <span class="chip-dot"></span>
+                                            <span>Loop</span>
+                                        </button>
+                                        <button type="button" class="control-chip" data-toggle="markers" data-active="false" aria-pressed="false">
+                                            <span class="chip-dot"></span>
+                                            <span>Marcador</span>
+                                        </button>
                                     </div>
+                                    <div id="lyrics-panel" class="mt-2 hidden rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm text-slate-400">
+                                        <p class="text-[0.65rem] uppercase tracking-[0.2em] text-slate-500">Letra</p>
+                                        <p class="mt-2">La letra de la canción aparecerá aquí cuando la actives.</p>
+                                    </div>
+                                    <div id="timeline-sections" class="flex flex-wrap items-center gap-2"></div>
+                                </div>
                             </div>
                         </section>
 
@@ -138,6 +197,8 @@
         const menuToggle = document.getElementById('menu-toggle');
         const sidebarClose = document.getElementById('sidebar-close');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const songVideo = document.getElementById('song-video');
+        const lyricsPanel = document.getElementById('lyrics-panel');
 
         function openSidebar() {
             sidebar.classList.remove('-translate-x-full');
@@ -148,6 +209,29 @@
             sidebar.classList.add('-translate-x-full');
             sidebarOverlay.classList.add('hidden');
         }
+
+        document.querySelectorAll('[data-toggle]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const isActive = button.dataset.active === 'true';
+                const nextActive = !isActive;
+                button.dataset.active = String(nextActive);
+                button.setAttribute('aria-pressed', String(nextActive));
+
+                switch (button.dataset.toggle) {
+                    case 'video':
+                        songVideo.classList.toggle('hidden', !nextActive);
+                        break;
+                    case 'lyrics':
+                        lyricsPanel.classList.toggle('hidden', !nextActive);
+                        break;
+                    case 'video-volume':
+                        button.querySelector('span:last-child').textContent = nextActive ? 'Vol video' : 'Silenciar';
+                        break;
+                    default:
+                        break;
+                }
+            });
+        });
 
         menuToggle.addEventListener('click', openSidebar);
         sidebarClose.addEventListener('click', closeSidebar);

@@ -319,7 +319,7 @@ async function renderSongTimeline() {
                 const raw = lc.text || ""
                 const match = raw.match(/^(.*?)%([^%]*)%([\s\S]*)$/)
                 const lyricWrapper = document.createElement("p")
-                lyricWrapper.className = "relative mt-0.5 whitespace-nowrap text-md leading-5"
+                lyricWrapper.className = "relative mt-0.5 whitespace-nowrap text-xl leading-5"
                 if (match) {
                     const [, before, syllable, after] = match
                     // Mismo color para todo el texto; solo la sílaba va en negrita.
@@ -333,7 +333,7 @@ async function renderSongTimeline() {
                     }
                     if (syllable) {
                         const syllSpan = document.createElement("span")
-                        syllSpan.className = `font-semibold ${baseTextClass}`
+                        syllSpan.className = `font-semibold underline ${baseTextClass}`
                         syllSpan.textContent = syllable
                         lyricWrapper.appendChild(syllSpan)
                     }
