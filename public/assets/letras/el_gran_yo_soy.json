@@ -3,7 +3,8 @@
         "title": "El gran yo soy",
         "artist": "En espíritu y en verdad",
         "bpm": 80,
-        "timeSignature": "4/4",
+        "timeSignatureLabel": "4/4",
+        "timeSignature": 4,
         "key": "D",
         "videoid-youtube": "bd-ectv28RE",
         "animationDelay": 4.7

@@ -3,7 +3,8 @@
         "title": "Dios incomparable",
         "artist": "Generación 12",
         "bpm": 78,
-        "timeSignature": "4/4",
+        "timeSignatureLabel": "4/4",
+        "timeSignature": 4,
         "key": "B",
         "videoid-youtube": "WmcSy89s9Ww",
         "animationDelay": 0.2
@@ -17,8 +18,7 @@
                 {
                     "measure": 1,
                     "chord": "B",
-                    "text": "",
-                    "duration": 4
+                    "text": ""
                 },
                 {
                     "measure": 2,

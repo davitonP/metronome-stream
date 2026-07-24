@@ -3,7 +3,8 @@
         "title": "Cuan grande es Dios",
         "artist": "En espíritu y en verdad",
         "bpm": 72,
-        "timeSignature": "4/4",
+        "timeSignatureLabel": "4/4",
+        "timeSignature": 4,
         "key": "C",
         "videoid-youtube": "drFvhcWYS3U",
         "animationDelay": 0.6
