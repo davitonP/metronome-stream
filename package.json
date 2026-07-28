@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node ./server/index.js",
     "dev": "node --watch ./server/index.js",
+    "dev:client": "pnpm --dir client dev",
+    "build:client": "pnpm --dir client build",
     "build:css": "tailwindcss -i ./public/assets/css/index.css -o ./public/assets/css/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -13,6 +13,7 @@ Aplicación Node.js para sincronizar un metrónomo en tiempo real entre varios d
 - Socket.IO
 - `precise-time-ntp` para sincronización temporal
 - Tailwind CSS (CLI y versión browser, según la vista)
+- Frontend del metrónomo: Vue 3 (Composition API) + Vite en `client/`
 
 ## Requisitos
 - Node.js 18+ (recomendado 20+)
@@ -24,24 +25,38 @@ pnpm install
 ```
 
 ## Ejecutar en desarrollo
+El frontend del metrónomo vive en `client/` (Vue 3 + Vite) y el backend en `server/`. En desarrollo se corren **dos procesos**:
 ```bash path=null start=null
+# Terminal 1 · backend Express + Socket.IO (puerto 3000)
 pnpm dev
+
+# Terminal 2 · dev server de Vite con HMR (proxy a :3000 para /socket.io, /audio y /assets)
+pnpm dev:client
 ```
-Servidor disponible por defecto en `http://localhost:3000`.
+Abre la URL que imprime Vite (por defecto `http://localhost:5173`). El backend queda en `http://localhost:3000`.
+La primera vez, instala las dependencias del cliente:
+```bash path=null start=null
+pnpm --dir client install
+```
 
 ## Ejecutar en producción/local simple
+Compila la SPA y luego arranca el servidor, que sirve el build en `/metronome`:
 ```bash path=null start=null
+pnpm build:client
 pnpm start
 ```
+El build se genera en `server/public-dist/` y Express lo sirve automáticamente si existe.
 
 ## Scripts disponibles
 - `pnpm start`: inicia el servidor (`server/index.js`)
-- `pnpm dev`: inicia con `--watch`
-- `pnpm build:css`: observa y compila `public/assets/css/index.css` a `public/assets/css/output.css`
+- `pnpm dev`: inicia el backend con `--watch`
+- `pnpm dev:client`: dev server de Vite (frontend Vue con HMR y proxy)
+- `pnpm build:client`: compila la SPA de Vue a `server/public-dist/`
+- `pnpm build:css`: observa y compila `public/assets/css/index.css` a `public/assets/css/output.css` (vistas legacy)
 
 ## Rutas HTTP actuales
-- `GET /` → `public/metronome.html`
-- `GET /metronome` → `public/metronome.html`
+- `GET /` → `public/index.html` (legacy)
+- `GET /metronome` → SPA de Vue (`server/public-dist/index.html`) si hay build; si no, `public/metronome.html`
 - `GET /timeSync` → `public/timeSync.html`
 - `GET /audio/:filename` → streaming de audio desde `public/assets/secuencias/` (incluye soporte de rango)
 

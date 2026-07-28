@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* Animaciones de fondo (blobs) portadas desde metronome.html */
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+.blob-1 { animation: float 8s ease-in-out infinite; }
+.blob-2 { animation: float 10s ease-in-out infinite 2s; }
+.blob-3 { animation: float 12s ease-in-out infinite 4s; }

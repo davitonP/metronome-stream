@@ -13,6 +13,14 @@ const app = express()
 app.use(logger('dev'))
 app.use(express.static(process.cwd() + '/public', { index: false }))
 
+// Build de la SPA (Vue + Vite). Existe solo tras `pnpm build:client`.
+const spaDist = process.cwd() + '/server/public-dist'
+const spaIndex = spaDist + '/index.html'
+const hasSpaBuild = fs.existsSync(spaIndex)
+if (hasSpaBuild) {
+  app.use(express.static(spaDist, { index: false }))
+}
+
 const server = createServer(app)
 const io = new Server(server)
 
@@ -46,7 +54,11 @@ app.get('/timeSync', (req, res) => {
     res.sendFile(process.cwd() + '/public/timeSync.html')
 })
 
+// La vista del metrónomo ahora es la SPA de Vue (si hay build); si no, cae al HTML legacy.
 app.get('/metronome', (req, res) => {
+    if (hasSpaBuild) {
+        return res.sendFile(spaIndex)
+    }
     res.sendFile(process.cwd() + '/public/metronome.html')
 })
 
