@@ -2,44 +2,86 @@
   "metadata": {
     "title": "Al Que Me Ciñe de Poder",
     "artist": "Jesús Adrián Romero",
-    "bpm": 104,
-    "timeSignature": "4/4",
-    "key": "F#"
+    "bpm": 104.3,
+    "timeSignatureLabel": "4/4",
+    "timeSignature": 4,
+    "key": "F#",
+    "videoid-youtube": "DAT0NhkGibs",
+    "animationDelay": 0.2
   },
   "sections": [
+    {
+      "name": "Intro",
+      "startMeasure": 1,
+      "items": [
+        {
+          "measure": 1,
+          "chord": "F",
+          "text": ""
+        },
+        {
+          "measure": 2,
+          "chord": "F",
+          "text": ""
+        },
+        {
+          "measure": 3,
+          "chord": "Dm",
+          "text": ""
+        },
+        {
+          "measure": 4,
+          "chord": "Dm",
+          "text": ""
+        }
+      ]
+    },
     {
       "name": "Verso",
       "startMeasure": 1,
       "items": [
         {
+          "measure": 5,
+          "chord": "F",
+          "text": ""
+        },
+        {
           "measure": 1,
-          "chord": "E",
-          "text": "Al que me ciñe de poder",
-          "duration": 4
+          "chord": "F",
+          "text": "Al que me ciñe de po%der%"
         },
         {
           "measure": 2,
-          "chord": "C#m",
-          "text": "Al que le di victoria es",
-          "duration": 4
+          "chord": "F",
+          "text": ""
         },
         {
           "measure": 3,
-          "chord": "A",
-          "text": "Sólo a él",
-          "duration": 2
+          "chord": "Dm",
+          "text": "Aquel que mi victoria %es%"
+        },
+        {
+          "measure": 4,
+          "chord": "Dm",
+          "text": ""
+        },
+        {
+          "measure": 3,
+          "chord": "Bb",
+          "text": "Solo a Él alaba%ré%, ",
+          "duration": 4
         },
         {
           "measure": 3,
           "beat": 3,
           "chord": "B",
-          "text": "alabaré",
-          "duration": 2
+          "text": "",
+          "duration": 4
         },
         {
           "measure": 4,
-          "chord": "E",
-          "text": "Sólo a él exaltaré",
+          "chord": "F",
+          "text": "solo a el exalta%ré%",
           "duration": 4
         }
       ]
@@ -49,25 +91,153 @@
       "startMeasure": 5,
       "items": [
         {
-          "measure": 5,
-          "chord": "A",
-          "text": "De ti será mi alabanza",
+          "measure": 1,
+          "chord": "Bb",
+          "text": "De %ti% ",
+          "duration": 2
+        },
+        {
+          "measure": 2,
+          "beat": 3,
+          "chord": "C",
+          "text": "se%rá% mi ",
+          "duration": 2
+        },
+        {
+          "measure": 3,
+          "chord": "F",
+          "text": "alaban%za%",
+          "duration": 4
+        },
+        {
+          "measure": 4,
+          "chord": "Bb",
+          "text": "En %la% ",
           "duration": 2
         },
         {
           "measure": 5,
           "beat": 3,
-          "chord": "B",
-          "text": "",
+          "chord": "C",
+          "text": "con%gre%---ga---ción ",
           "duration": 2
         },
         {
           "measure": 6,
-          "chord": "E",
+          "chord": "F",
           "text": "",
+          "duration": 4
+        },
+
+        {
+          "measure": 7,
+          "chord": "Bb",
+          "text": "Can%ta%ré ",
+          "duration": 2
+        },
+        {
+          "measure":8,
+          "beat": 3,
+          "chord": "C",
+          "text": " ",
+          "duration": 2
+        },
+        {
+          "measure": 9,
+          "chord": "F",
+          "text": "a%la%bare",
+          "duration": 1
+        },
+        {
+          "measure": 10,
+          "beat": 3,
+          "chord": "C",
+          "text": " ",
+          "duration": 1
+        },
+        {
+          "measure": 11,
+          "chord": "Dm",
+          "text": "",
+          "duration": 4
+        },
+        {
+          "measure": 12,
+          "chord": "Bb",
+          "text": "Tu nombre ",
+          "duration": 2
+        },
+        {
+          "measure": 13,
+          "beat": 3,
+          "chord": "C",
+          "text": " ",
+          "duration": 2
+        },
+        {
+          "measure": 14,
+          "chord": "F",
+          "text": "señor",
           "duration": 4
         }
       ]
+    },
+    {
+      "name": "final",
+      "startMeasure": 1,
+      "items": [
+        {
+          "measure": 12,
+          "chord": "Bb",
+          "text": "Tu nombre ",
+          "duration": 2
+        },
+        {
+          "measure": 13,
+          "beat": 3,
+          "chord": "C",
+          "text": " ",
+          "duration": 2
+        },
+        {
+          "measure": 14,
+          "chord": "F",
+          "text": "señor",
+          "duration": 4
+        },
+        {
+          "measure": 12,
+          "chord": "Bb",
+          "text": "Tu nombre ",
+          "duration": 2
+        },
+        {
+          "measure": 13,
+          "beat": 3,
+          "chord": "C",
+          "text": " ",
+          "duration": 2
+        },
+        {
+          "measure": 14,
+          "chord": "F",
+          "text": "señor",
+          "duration": 8
+        }
+      ]
     }
+  ],
+  "structure": [
+    "intro",
+    "verso",
+    "verso",
+    "coro",
+    "coro",
+    "verso",
+    "verso",
+    "coro",
+    "coro",
+    "coro",
+    "final"
   ]
 }
