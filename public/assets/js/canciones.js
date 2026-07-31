@@ -5,6 +5,66 @@ const SONGS_LIST_URL = "/assets/letras/lista_canciones.json"
 let timelineScrollMode = "izquierda"
 let currentSongDataUrl = "/assets/letras/dios_incomparable.json"
 
+// ---- Metrónomo sincronizado con la animación ----
+// metronome1: acento (primer tiempo de cada compás), metronome2: tiempos intermedios.
+const METRONOME_ACCENT_URL = "/assets/secuencias/metronome_sound/metronome1.mp3"
+const METRONOME_BEAT_URL = "/assets/secuencias/metronome_sound/metronome2.mp3"
+let metronomeCtx = null
+let metronomeAccentBuffer = null
+let metronomeBeatBuffer = null
+let metronomeLoadPromise = null
+
+function getMetronomeCtx() {
+    if (metronomeCtx) return metronomeCtx
+    if (typeof window.getAudioContext === "function") {
+        metronomeCtx = window.getAudioContext()
+    } else {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext
+        metronomeCtx = new AudioCtx()
+    }
+    return metronomeCtx
+}
+
+function loadMetronomeSounds() {
+    if (metronomeLoadPromise) return metronomeLoadPromise
+    const ctx = getMetronomeCtx()
+    const fetchBuffer = async (url) => {
+        const res = await fetch(url)
+        const arr = await res.arrayBuffer()
+        return ctx.decodeAudioData(arr)
+    }
+    metronomeLoadPromise = Promise.all([
+        fetchBuffer(METRONOME_ACCENT_URL),
+        fetchBuffer(METRONOME_BEAT_URL)
+    ]).then(([accent, beat]) => {
+        metronomeAccentBuffer = accent
+        metronomeBeatBuffer = beat
+    }).catch((error) => {
+        console.warn("No se pudieron cargar los sonidos del metrónomo:", error)
+        metronomeLoadPromise = null
+    })
+    return metronomeLoadPromise
+}
+
+function isMetronomeEnabled() {
+    const toggle = document.querySelector('[data-toggle="metronome"]')
+    return !!toggle && toggle.dataset.active === "true"
+}
+
+// beatInBar === 0 -> primer tiempo del compás (acento), resto -> tiempo intermedio.
+function playMetronomeClick(beatInBar) {
+    if (!isMetronomeEnabled()) return
+    const ctx = metronomeCtx
+    if (!ctx) return
+    const buffer = beatInBar === 0 ? metronomeAccentBuffer : metronomeBeatBuffer
+    if (!buffer) return
+    if (ctx.state === "suspended") ctx.resume()
+    const source = ctx.createBufferSource()
+    source.buffer = buffer
+    source.connect(ctx.destination)
+    source.start()
+}
+
 // ---- Reproducción de YouTube (puente con lite-youtube) ----
 // Permite que el botón de play controle también el video de YouTube.
 const ytLite = document.querySelector("lite-youtube")
@@ -517,6 +577,9 @@ async function renderSongTimeline() {
     const bpmTime = 60000 / bpm
     console.log("bpmTime", bpmTime)
     const animationDelayMs = (Number(songData.metadata?.animationDelay) || 0) * 1000
+    // Tiempos por compás (p. ej. 4 en 4/4); el primer tiempo lleva el acento.
+    const beatsPerBar = Math.max(1, Math.floor(Number(songData.metadata?.timeSignature) || 4))
+    loadMetronomeSounds()
     updateSongInfo(songData.metadata)
 
     const newVideoId = songData.metadata?.["videoid-youtube"]
@@ -660,10 +723,12 @@ async function renderSongTimeline() {
         }
 
         let fallbackClockStart = null
+        let lastBeatPlayed = -1
         const startTimeline = () => {
             if (isStale()) return
             cancelAnimationFrame(window.timelineRAF)
             fallbackClockStart = performance.now() - (playbackOffsetSec * 1000)
+            lastBeatPlayed = -1
             const tick = () => {
                 if (!isPlaying || isStale()) return
                 let t = null
@@ -690,6 +755,11 @@ async function renderSongTimeline() {
                 if (clamped !== activeIndex) {
                     activeIndex = clamped
                     renderActive()
+                }
+                // Un click por beat: acento en el primer tiempo del compás, intermedio en el resto.
+                if (clamped !== lastBeatPlayed) {
+                    playMetronomeClick(clamped % beatsPerBar)
+                    lastBeatPlayed = clamped
                 }
                 window.timelineRAF = requestAnimationFrame(tick)
             }
@@ -801,6 +871,11 @@ async function renderSongTimeline() {
             if (isPlaying) {
                 setPlaying(false)
                 return
+            }
+            // Gesto del usuario: reanuda el contexto para permitir el audio del metrónomo.
+            if (isMetronomeEnabled()) {
+                const ctx = getMetronomeCtx()
+                if (ctx && ctx.state === "suspended") ctx.resume()
             }
             playbackOffsetSec = animationDelayMs / 1000
             if (isVideoPlaybackEnabled() && ytPlayer && ytPlayerReady) {
